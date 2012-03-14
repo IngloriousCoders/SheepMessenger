@@ -10,6 +10,6 @@ public class SheepMessenger extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         //luca
-        //Hat jetzt erneut was geaentert
+        //Hat jetzt erneut was geaentert NOCHMAL
     }
 }
