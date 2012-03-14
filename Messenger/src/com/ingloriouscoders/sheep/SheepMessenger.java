@@ -10,5 +10,6 @@ public class SheepMessenger extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         //luca
+        
     }
 }
