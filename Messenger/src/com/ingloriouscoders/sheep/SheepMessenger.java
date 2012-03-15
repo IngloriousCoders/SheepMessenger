@@ -8,13 +8,6 @@ public class SheepMessenger extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        //luca
-        //Hat jetzt erneut was geaentert NOCHMAL
-        //ERNEUT
-        //saklfj
-        
-        //Push dich, alta!
-        // Nein man
+        setContentView(R.layout.main);    
    }
 }
