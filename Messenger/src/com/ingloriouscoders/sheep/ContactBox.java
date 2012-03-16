@@ -92,6 +92,7 @@ public class ContactBox extends View {
 		if (state_pressed)
 		{
 			borderPaint.setColor(Color.BLACK);
+			
 		}
 		
 		canvas.drawRoundRect(new RectF(0,0,width,height), 20, 20, borderPaint);
@@ -101,6 +102,15 @@ public class ContactBox extends View {
 		if (rounded_contact_bitmap != null)
 		{
 			canvas.drawBitmap(rounded_contact_bitmap,0,0,bitmapPaint);
+		}
+		if (state_pressed)
+		{
+			Paint darkerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+			darkerPaint.setColor(Color.BLACK);
+			darkerPaint.setAlpha(100);
+			
+			canvas.drawRoundRect(new RectF(0,0,width,height), 20, 20, darkerPaint);
+			
 		}
 		
 	}	
