@@ -18,6 +18,7 @@ public class ContactBox extends View {
 	private int height = 300;
 	
 	private int border_radius = 20;
+	private int shadow_radius = 10;
 	
 	private boolean state_pressed = false;
 	
@@ -52,7 +53,7 @@ public class ContactBox extends View {
 		int img_width = bitmap.getWidth();
 		int img_height = bitmap.getHeight();
 		
-		rounded_contact_bitmap = Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888);
+		rounded_contact_bitmap = Bitmap.createBitmap(width-shadow_radius,height-shadow_radius,Bitmap.Config.ARGB_8888);
 		
 		Canvas init_canvas = new Canvas(rounded_contact_bitmap);
 		
@@ -60,11 +61,11 @@ public class ContactBox extends View {
 		
 		maskPaint.setColor(Color.RED);
 		
-		init_canvas.drawRoundRect(new RectF(1,1,width-1,height-1), border_radius, border_radius , maskPaint);
+		init_canvas.drawRoundRect(new RectF(shadow_radius+1,shadow_radius+1,width-1-shadow_radius,height-1-shadow_radius), border_radius, border_radius , maskPaint);
 		
 		maskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
 		
-		init_canvas.drawBitmap(bitmap,new Rect(0,0,img_width,img_height),new Rect(1,1,width-1,height-1),maskPaint);		
+		init_canvas.drawBitmap(bitmap,new Rect(0,0,img_width,img_height),new Rect(shadow_radius+1,shadow_radius+1,width-1-shadow_radius,height-1-shadow_radius),maskPaint);		
 		
 	}
 	@Override
@@ -86,8 +87,15 @@ public class ContactBox extends View {
 	@Override
 	protected void onDraw(Canvas canvas)
 	{
+		Paint shadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		
+		
+		
+		shadowPaint.setShadowLayer(shadow_radius,0,0,Color.BLACK);
+		canvas.drawRoundRect(new RectF(shadow_radius,shadow_radius,width-shadow_radius,height-shadow_radius), 10, 20, shadowPaint);
+		
 		Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		borderPaint.setColor(Color.WHITE);
+		borderPaint.setColor(Color.GRAY);
 		
 		if (state_pressed)
 		{
@@ -95,7 +103,7 @@ public class ContactBox extends View {
 			
 		}
 		
-		canvas.drawRoundRect(new RectF(0,0,width,height), 20, 20, borderPaint);
+		canvas.drawRoundRect(new RectF(shadow_radius,shadow_radius,width-shadow_radius,height-shadow_radius), 20, 20, borderPaint);
 		
 		Paint bitmapPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		
@@ -109,7 +117,7 @@ public class ContactBox extends View {
 			darkerPaint.setColor(Color.BLACK);
 			darkerPaint.setAlpha(100);
 			
-			canvas.drawRoundRect(new RectF(0,0,width,height), 20, 20, darkerPaint);
+			canvas.drawRoundRect(new RectF(shadow_radius,shadow_radius,width-shadow_radius,height-shadow_radius), 20, 20, darkerPaint);
 			
 		}
 		
