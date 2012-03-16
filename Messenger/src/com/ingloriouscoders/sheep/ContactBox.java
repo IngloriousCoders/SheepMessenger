@@ -3,6 +3,7 @@ package com.ingloriouscoders.sheep;
 
 import android.view.*;
 import android.graphics.*;
+import android.graphics.Paint.Align;
 import android.content.*;
 import android.util.*;
 import android.graphics.PorterDuff.Mode;
@@ -22,12 +23,22 @@ public class ContactBox extends View {
 	
 	private boolean state_pressed = false;
 	
+	private String contact_label = "Luca";
+	
 	public ContactBox(Context context){
 
 		super(context);
 		initializeBitmap();
 
 	}
+	public ContactBox(Context context,String _contact_label){
+
+		super(context);
+		initializeBitmap();
+		contact_label = _contact_label;
+
+	}
+	
 
 	
 
@@ -48,12 +59,13 @@ public class ContactBox extends View {
 	
 	private void initializeBitmap()
 	{
+		int box_height = width;
 		Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.nocontact);
 		
 		int img_width = bitmap.getWidth();
 		int img_height = bitmap.getHeight();
 		
-		rounded_contact_bitmap = Bitmap.createBitmap(width-shadow_radius,height-shadow_radius,Bitmap.Config.ARGB_8888);
+		rounded_contact_bitmap = Bitmap.createBitmap(width-shadow_radius,box_height-shadow_radius,Bitmap.Config.ARGB_8888);
 		
 		Canvas init_canvas = new Canvas(rounded_contact_bitmap);
 		
@@ -61,11 +73,11 @@ public class ContactBox extends View {
 		
 		maskPaint.setColor(Color.RED);
 		
-		init_canvas.drawRoundRect(new RectF(shadow_radius+1,shadow_radius+1,width-1-shadow_radius,height-1-shadow_radius), border_radius, border_radius , maskPaint);
+		init_canvas.drawRoundRect(new RectF(shadow_radius+1,shadow_radius+1,width-1-shadow_radius,box_height-1-shadow_radius), border_radius, border_radius , maskPaint);
 		
 		maskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
 		
-		init_canvas.drawBitmap(bitmap,new Rect(0,0,img_width,img_height),new Rect(shadow_radius+1,shadow_radius+1,width-1-shadow_radius,height-1-shadow_radius),maskPaint);		
+		init_canvas.drawBitmap(bitmap,new Rect(0,0,img_width,img_height),new Rect(shadow_radius+1,shadow_radius+1,width-1-shadow_radius,box_height-1-shadow_radius),maskPaint);		
 		
 	}
 	@Override
@@ -87,12 +99,18 @@ public class ContactBox extends View {
 	@Override
 	protected void onDraw(Canvas canvas)
 	{
+		if (height < width+50)
+		{
+			return;
+		}
+		
+		int box_height = width;
+		
 		Paint shadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		
-		
+	
 		
 		shadowPaint.setShadowLayer(shadow_radius,0,0,Color.BLACK);
-		canvas.drawRoundRect(new RectF(shadow_radius,shadow_radius,width-shadow_radius,height-shadow_radius), border_radius, border_radius, shadowPaint);
+		canvas.drawRoundRect(new RectF(shadow_radius,shadow_radius,width-shadow_radius,box_height-shadow_radius), border_radius, border_radius, shadowPaint);
 		
 		Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		borderPaint.setColor(Color.GRAY);
@@ -103,7 +121,7 @@ public class ContactBox extends View {
 			
 		}
 		
-		canvas.drawRoundRect(new RectF(shadow_radius,shadow_radius,width-shadow_radius,height-shadow_radius), border_radius, border_radius, borderPaint);
+		canvas.drawRoundRect(new RectF(shadow_radius,shadow_radius,width-shadow_radius,box_height-shadow_radius), border_radius, border_radius, borderPaint);
 		
 		Paint bitmapPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		
@@ -117,9 +135,16 @@ public class ContactBox extends View {
 			darkerPaint.setColor(Color.BLACK);
 			darkerPaint.setAlpha(100);
 			
-			canvas.drawRoundRect(new RectF(shadow_radius,shadow_radius,width-shadow_radius,height-shadow_radius), border_radius, border_radius, darkerPaint);
+			canvas.drawRoundRect(new RectF(shadow_radius,shadow_radius,width-shadow_radius,box_height-shadow_radius), border_radius, border_radius, darkerPaint);
 			
 		}
+		
+		Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		textPaint.setColor(Color.WHITE);
+		textPaint.setTextSize(20);
+		textPaint.setTextAlign(Align.CENTER);
+		
+		canvas.drawText(contact_label,width/2,box_height+30,textPaint);
 		
 	}	
 	@Override
