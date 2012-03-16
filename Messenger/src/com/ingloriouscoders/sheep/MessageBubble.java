@@ -37,6 +37,11 @@ public class MessageBubble extends View {
 	{
 		//TODO: Attribute an Custom Widget uebergeben?!
 		//TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.MessageBubble, 0, 0);
+		/*TypedArray typedArray= getContext().obtainStyledAttributes(R.styleable.MessageBubble);
+        int back=typedArray.getResourceId(R.styleable.MessageBubble_color, 0);
+        Log.v("Custom", back + "");
+        typedArray.recycle();*/
+
 		
 		Paint borderPaint = new Paint();
 		borderPaint.setAntiAlias(true);
