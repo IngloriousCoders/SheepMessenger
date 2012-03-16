@@ -1,18 +1,17 @@
 package com.ingloriouscoders.sheep;
 
-
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
-import android.widget.LinearLayout;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.widget.ImageView;
 
 public class SheepMessenger extends Activity {
+	
+	private ImageView image;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -24,11 +23,16 @@ public class SheepMessenger extends Activity {
         ContactBox conbox = (ContactBox) findViewById(R.id.contactbox);
         
         conbox.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-            	Log.v("Custom","pressed");
-                Intent myIntent = new Intent(view.getContext(), SingleChat.class);
-                startActivityForResult(myIntent, 0);
-            }
+            	public void onClick(View view) {
+	                Intent myIntent = new Intent(view.getContext(), SingleChat.class);
+	                myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+	                startActivityForResult(myIntent, 0);
+	                
+	                overridePendingTransition(R.anim.enterfromright, R.anim.leavetoleft);
+	                
+
+            	}
         });
    }
+    
 }

@@ -3,6 +3,7 @@ package com.ingloriouscoders.sheep;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.LinearLayout;
@@ -15,5 +16,12 @@ public class SingleChat extends Activity {
         
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.singlechat);
+   }
+    
+    @Override
+    public void onPause() {
+        super.onPause();
+        
+        overridePendingTransition(R.anim.enterfromleft, R.anim.leavetoright);
    }
 }
