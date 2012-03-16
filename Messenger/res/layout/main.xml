@@ -2,13 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" 
-    android:background="@drawable/bg" >
+    android:layout_gravity="bottom"
+    
+    android:background="@drawable/bg"
+    android:gravity="center_horizontal|fill_horizontal"
+    android:orientation="vertical" >
 
     <GridLayout
         android:id="@+id/contactGrid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:layout_margin="20dp"
         android:columnWidth="110dp"
         android:numColumns="auto_fit" >
 
@@ -17,23 +22,23 @@
             android:layout_width="130dp"
             android:layout_height="130dp"
             android:layout_column="0"
-            android:layout_columnSpan="2"
             android:layout_row="0"
-            android:layout_rowSpan="2"
             android:focusable="true"
             android:focusableInTouchMode="true" />
 
-        <Space
-            android:layout_width="1dp"
-            android:layout_height="119dp"
-            android:layout_column="0"
+        <com.ingloriouscoders.sheep.ContactBox
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_column="2"
+            android:layout_gravity="right"
             android:layout_row="0" />
 
         <Space
-            android:layout_width="16dp"
-            android:layout_height="1dp"
+            android:layout_width="1dp"
+            android:layout_height="127dp"
             android:layout_column="0"
             android:layout_row="0" />
+
     </GridLayout>
 
 </LinearLayout>
