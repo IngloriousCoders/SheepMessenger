@@ -23,12 +23,18 @@
 
         <com.ingloriouscoders.sheep.ContactBox
             android:id="@+id/contactbox"
-            android:layout_width="285dp"
-            android:layout_height="290dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:layout_column="0"
-            android:layout_row="1"
+            android:layout_row="2"
             android:focusable="true"
             android:focusableInTouchMode="true" />
+
+        <Space
+            android:layout_width="1dp"
+            android:layout_height="39dp"
+            android:layout_column="0"
+            android:layout_row="1" />
     </GridLayout>
 
 </LinearLayout>
