@@ -130,10 +130,11 @@ public class ContactBox extends View {
 			state_pressed = true;
 			// Invalidate tut alles redrawen
 			invalidate();
-			return false;
+			return true;
 		case MotionEvent.ACTION_UP:
 			state_pressed = false;
 			invalidate();
+			callOnClick();
 			return true;
 		
 		}
