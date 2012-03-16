@@ -23,5 +23,5 @@ public class SingleChat extends Activity {
         super.onPause();
         
         overridePendingTransition(R.anim.enterfromleft, R.anim.leavetoright);
-   }
+   } 
 }

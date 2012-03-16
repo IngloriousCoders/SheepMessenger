@@ -29,7 +29,7 @@ public class SheepMessenger extends Activity {
 	                startActivityForResult(myIntent, 0);
 	                
 	                overridePendingTransition(R.anim.enterfromright, R.anim.leavetoleft);
-	                
+	                 
 
             	}
         });
