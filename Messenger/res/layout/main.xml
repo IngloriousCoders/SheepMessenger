@@ -12,29 +12,28 @@
         android:columnWidth="110dp"
         android:numColumns="auto_fit" >
 
-        <com.ingloriouscoders.sheep.MessageBubble
-            android:id="@+id/message"
-            android:layout_width="wrap_content"
-            android:layout_height="80dp"
-            android:layout_column="0"
-            android:layout_row="0"
-            android:focusable="true"
-            android:focusableInTouchMode="true" />
-
         <com.ingloriouscoders.sheep.ContactBox
             android:id="@+id/contactbox"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
             android:layout_column="0"
-            android:layout_row="2"
+            android:layout_columnSpan="2"
+            android:layout_row="0"
+            android:layout_rowSpan="2"
             android:focusable="true"
             android:focusableInTouchMode="true" />
 
         <Space
             android:layout_width="1dp"
-            android:layout_height="39dp"
+            android:layout_height="119dp"
             android:layout_column="0"
-            android:layout_row="1" />
+            android:layout_row="0" />
+
+        <Space
+            android:layout_width="16dp"
+            android:layout_height="1dp"
+            android:layout_column="0"
+            android:layout_row="0" />
     </GridLayout>
 
 </LinearLayout>

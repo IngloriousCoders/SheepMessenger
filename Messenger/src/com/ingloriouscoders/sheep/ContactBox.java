@@ -92,7 +92,7 @@ public class ContactBox extends View {
 		
 		
 		shadowPaint.setShadowLayer(shadow_radius,0,0,Color.BLACK);
-		canvas.drawRoundRect(new RectF(shadow_radius,shadow_radius,width-shadow_radius,height-shadow_radius), 10, 20, shadowPaint);
+		canvas.drawRoundRect(new RectF(shadow_radius,shadow_radius,width-shadow_radius,height-shadow_radius), border_radius, border_radius, shadowPaint);
 		
 		Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		borderPaint.setColor(Color.GRAY);
@@ -103,7 +103,7 @@ public class ContactBox extends View {
 			
 		}
 		
-		canvas.drawRoundRect(new RectF(shadow_radius,shadow_radius,width-shadow_radius,height-shadow_radius), 20, 20, borderPaint);
+		canvas.drawRoundRect(new RectF(shadow_radius,shadow_radius,width-shadow_radius,height-shadow_radius), border_radius, border_radius, borderPaint);
 		
 		Paint bitmapPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		
@@ -117,7 +117,7 @@ public class ContactBox extends View {
 			darkerPaint.setColor(Color.BLACK);
 			darkerPaint.setAlpha(100);
 			
-			canvas.drawRoundRect(new RectF(shadow_radius,shadow_radius,width-shadow_radius,height-shadow_radius), 20, 20, darkerPaint);
+			canvas.drawRoundRect(new RectF(shadow_radius,shadow_radius,width-shadow_radius,height-shadow_radius), border_radius, border_radius, darkerPaint);
 			
 		}
 		
