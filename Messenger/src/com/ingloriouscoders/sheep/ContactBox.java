@@ -25,17 +25,24 @@ public class ContactBox extends View {
 	
 	private String contact_label = "Luca";
 	
+	private Contact mContact;
+	
 	public ContactBox(Context context){
 
 		super(context);
 		initializeBitmap();
+		mContact = Contact.getPlaceholder();
 
 	}
-	public ContactBox(Context context,String _contact_label){
+	public ContactBox(Context context,Contact _contact){
 
 		super(context);
+
+		
 		initializeBitmap();
-		contact_label = _contact_label;
+		mContact = _contact;
+		
+		
 
 	}
 	
@@ -94,6 +101,8 @@ public class ContactBox extends View {
 		width = getMeasuredWidth();
 		height = getMeasuredHeight();
 		
+		Log.v("ContactBox",width + "|" + height);
+		
 		initializeBitmap();
 	}
 	@Override
@@ -103,11 +112,10 @@ public class ContactBox extends View {
 		{
 			return;
 		}
-		
 		int box_height = width;
-		
-		Paint shadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	
+		Paint shadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		shadowPaint.setColor(Color.BLACK);
 		
 		shadowPaint.setShadowLayer(shadow_radius,0,0,Color.BLACK);
 		canvas.drawRoundRect(new RectF(shadow_radius,shadow_radius,width-shadow_radius,box_height-shadow_radius), border_radius, border_radius, shadowPaint);
@@ -144,7 +152,7 @@ public class ContactBox extends View {
 		textPaint.setTextSize(20);
 		textPaint.setTextAlign(Align.CENTER);
 		
-		canvas.drawText(contact_label,width/2,box_height+30,textPaint);
+		canvas.drawText(this.mContact.getShowname(),width/2,box_height+30,textPaint);
 		
 	}	
 	@Override
@@ -168,12 +176,17 @@ public class ContactBox extends View {
 			state_pressed = false;
 			invalidate();
 			callOnClick();
-			return true;
+			return false;
+		default:
+			state_pressed = false;
+			invalidate();
+			return false;
 		
 		}
-		
-		
-		return false;
+	}
+	public void setContact(Contact _contact)
+	{
+		this.mContact = _contact;
 	}
 	
 }

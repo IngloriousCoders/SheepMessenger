@@ -7,7 +7,10 @@ import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.AdapterView;
+import android.util.Log;
 
 public class SheepMessenger extends Activity {
 	
@@ -20,19 +23,17 @@ public class SheepMessenger extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
         
-        ContactBox conbox = (ContactBox) findViewById(R.id.contactbox);
+        GridView gridview = (GridView) findViewById(R.id.contactGridView);
+        ContactAdapter adp = new ContactAdapter(this);
+        gridview.setAdapter(adp);
+        for(int i=0;i<100;i++)
+        {
+        	// new Contact ( username,anzeigename )
+        	Contact contact = new Contact("username" + i,"Person "+i);
+        	adp.addContact(contact);
+        }
         
-        conbox.setOnClickListener(new View.OnClickListener() {
-            	public void onClick(View view) {
-	                Intent myIntent = new Intent(view.getContext(), SingleChat.class);
-	                myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-	                startActivityForResult(myIntent, 0);
-	                
-	                overridePendingTransition(R.anim.enterfromright, R.anim.leavetoleft);
-	                 
-
-            	}
-        });
+       // Onclick listener Code wurde in ContactAdapter.java ausgelagert
    }
     
 }
