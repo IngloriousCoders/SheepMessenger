@@ -24,7 +24,7 @@ public class ContactFragment extends Fragment {
 		GridView gv = (GridView)mContentView.findViewById(R.id.contactGridView);
 		ContactAdapter adp = new ContactAdapter(getActivity());
 		gv.setAdapter(adp);
-		for(int i=0;i<100;i++)
+		for(int i=0;i<10;i++)
 		{
 			Contact contact = new Contact("user","Person" + i);
 			adp.addContact(contact);

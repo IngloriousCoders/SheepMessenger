@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="hello">Hello World, SheepMessenger!</string>
-    <string name="app_name">SheepMessenger</string>
+    <string name="menu_status">Status</string>
+    <string name="menu_add">Hinzufügen</string>
+    <string name="app_name">Messenger</string>
 
 </resources>

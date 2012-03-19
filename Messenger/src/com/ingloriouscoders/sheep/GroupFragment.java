@@ -24,7 +24,7 @@ public class GroupFragment extends Fragment {
 		GridView gv = (GridView)mContentView.findViewById(R.id.groupGridView);
 		ContactAdapter adp = new ContactAdapter(getActivity());
 		gv.setAdapter(adp);
-		for(int i=0;i<100;i++)
+		for(int i=0;i<3;i++)
 		{
 			Contact contact = new Contact("user","Gruppe" + i);
 			adp.addContact(contact);

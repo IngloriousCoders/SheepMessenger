@@ -13,10 +13,13 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.AdapterView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 
 import java.util.Vector;
 import java.util.List;
 import android.app.Fragment;
+import android.app.ActionBar;
 
 
 public class SheepMessenger extends FragmentActivity {
@@ -30,17 +33,23 @@ public class SheepMessenger extends FragmentActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
         
-        
-        
+           
         StartAdapter viewpager_adp = new StartAdapter(getSupportFragmentManager(),this);
         viewpager_adp.addPage(ContactFragment.class.getName());
         viewpager_adp.addPage(GroupFragment.class.getName());
         
         ViewPager vp = (ViewPager)findViewById(R.id.viewpager);
         vp.setAdapter(viewpager_adp);
+
         
         
-       // Onclick listener Code wurde in ContactAdapter.java ausgelagert
+
    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.start, menu);
+        return true;
+    }
     
 }

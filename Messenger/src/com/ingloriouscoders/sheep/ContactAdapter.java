@@ -1,6 +1,7 @@
 package com.ingloriouscoders.sheep;
 
 import android.widget.BaseAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.content.Context;
@@ -64,6 +65,7 @@ public class ContactAdapter extends BaseAdapter {
                 myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 ((Activity)mContext).startActivityForResult(myIntent, 0);
                 ((Activity)mContext).overridePendingTransition(R.anim.enterfromright, R.anim.leavetoleft);
+               
          	}
     	});
     	
