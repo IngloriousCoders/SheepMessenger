@@ -1,6 +1,8 @@
 package com.ingloriouscoders.sheep;
 
 import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -12,7 +14,12 @@ import android.widget.ImageView;
 import android.widget.AdapterView;
 import android.util.Log;
 
-public class SheepMessenger extends Activity {
+import java.util.Vector;
+import java.util.List;
+import android.app.Fragment;
+
+
+public class SheepMessenger extends FragmentActivity {
 	
 	private ImageView image;
     /** Called when the activity is first created. */
@@ -23,15 +30,15 @@ public class SheepMessenger extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
         
-        GridView gridview = (GridView) findViewById(R.id.contactGridView);
-        ContactAdapter adp = new ContactAdapter(this);
-        gridview.setAdapter(adp);
-        for(int i=0;i<100;i++)
-        {
-        	// new Contact ( username,anzeigename )
-        	Contact contact = new Contact("username" + i,"Person "+i);
-        	adp.addContact(contact);
-        }
+        
+        
+        StartAdapter viewpager_adp = new StartAdapter(getSupportFragmentManager(),this);
+        viewpager_adp.addPage(ContactFragment.class.getName());
+        viewpager_adp.addPage(GroupFragment.class.getName());
+        
+        ViewPager vp = (ViewPager)findViewById(R.id.viewpager);
+        vp.setAdapter(viewpager_adp);
+        
         
        // Onclick listener Code wurde in ContactAdapter.java ausgelagert
    }

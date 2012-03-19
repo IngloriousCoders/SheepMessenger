@@ -7,6 +7,7 @@ import android.content.Context;
 import java.util.List;
 import java.util.ArrayList;
 import android.widget.GridView;
+import android.os.Parcelable;
 
 import android.content.Intent;
 import android.app.Activity;
@@ -53,18 +54,17 @@ public class ContactAdapter extends BaseAdapter {
     	{
     		cb = (ContactBox)convertView;
     	}
-    	Contact thiscontact = mContacts.get(position);
+    	final Contact thiscontact = mContacts.get(position);
+    	
     	cb.setContact(thiscontact);
     	cb.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View view) {
                 Intent myIntent = new Intent(view.getContext(), SingleChat.class);
+                
                 myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 ((Activity)mContext).startActivityForResult(myIntent, 0);
-                
                 ((Activity)mContext).overridePendingTransition(R.anim.enterfromright, R.anim.leavetoleft);
-                 
-
-        	}
+         	}
     	});
     	
     	return cb;
