@@ -4,6 +4,7 @@ public class Contact {
 	
 	private String username;
 	private String showname;
+	private int unread_messages = 0;
 	
 	public Contact(String _username)
 	{
@@ -29,8 +30,18 @@ public class Contact {
 	{
 		return showname;
 	}
+	public void setUnreadMessages(int value)
+	{
+		unread_messages = value; 
+	}
+	public int getUnreadMessages()
+	{
+		return unread_messages;
+	}
+	
 	public static Contact getPlaceholder()
 	{
 		return new Contact("null","null name");
 	}
+	
 }

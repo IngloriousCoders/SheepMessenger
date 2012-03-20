@@ -37,8 +37,9 @@ public class SheepMessenger extends FragmentActivity {
         
         
         ActionBar ab = getActionBar();
-        ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);             
-        		
+        ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);    
+        
+        ab.setDisplayShowTitleEnabled(false);
         
         setContentView(R.layout.main);
         

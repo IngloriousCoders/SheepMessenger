@@ -6,5 +6,9 @@
     <string name="menu_add_group">Gruppe hinzufügen</string>
     <string name="tab_contacts_label">Kontakte</string>
     <string name="tab_groups_label">Gruppen</string>
+    <string name="new_messages_pt1">NEUE</string>
+    <string name="new_messages_pt2_sing">NACHRICHT</string>
+    <string name="new_messages_pt2_plur">NACHRICHTEN</string>
+    
 
 </resources>

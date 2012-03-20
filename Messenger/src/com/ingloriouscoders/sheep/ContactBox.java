@@ -9,6 +9,7 @@ import android.util.*;
 import android.graphics.PorterDuff.Mode;
 import android.view.InputEvent.*;
 import android.util.Log;
+import android.content.res.Resources;
 
 
 public class ContactBox extends View {
@@ -23,7 +24,9 @@ public class ContactBox extends View {
 	
 	private boolean state_pressed = false;
 	
+	
 	private String contact_label = "Luca";
+	
 	
 	private Contact mContact;
 	
@@ -41,9 +44,6 @@ public class ContactBox extends View {
 		
 		initializeBitmap();
 		mContact = _contact;
-		
-		
-
 	}
 	
 
@@ -122,6 +122,11 @@ public class ContactBox extends View {
 		
 		Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		borderPaint.setColor(Color.GRAY);
+		if (mContact.getUnreadMessages() > 0)
+		{
+			borderPaint.setColor(Color.GREEN);
+		}
+		
 		
 		if (state_pressed)
 		{
@@ -137,6 +142,64 @@ public class ContactBox extends View {
 		{
 			canvas.drawBitmap(rounded_contact_bitmap,0,0,bitmapPaint);
 		}
+		if (mContact.getUnreadMessages() > 0)
+		{
+			int start_height = box_height - (box_height*4)/6;
+			int end_height = box_height -  border_radius - shadow_radius -1;
+			int sum_height = end_height - start_height;
+			Path path = new Path();
+			path.moveTo(shadow_radius+1, start_height);
+			path.lineTo(width-shadow_radius-1, start_height);
+			path.lineTo(width-shadow_radius-1, end_height);
+			path.arcTo(new RectF(width-border_radius-shadow_radius*2-1,/*left*/
+							     end_height-border_radius-1,/*top*/
+							     width-shadow_radius-1,/*right*/
+							     end_height+border_radius-2),/*bottom*/
+							     0, 90, false);
+			path.lineTo(shadow_radius+border_radius, end_height+border_radius);
+			path.arcTo(new RectF(
+						shadow_radius+1,
+						end_height-border_radius,
+						2*border_radius+1,
+						end_height+border_radius-2
+						), 90, 90, false);
+			path.close();
+			Paint darkerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+			darkerPaint.setColor(Color.BLACK);
+			darkerPaint.setAlpha(100);
+			canvas.drawPath(path, darkerPaint);
+			
+			darkerPaint.setAlpha(255);
+			darkerPaint.setColor(Color.GREEN);
+			darkerPaint.setTextSize(sum_height-20);
+			darkerPaint.setTextAlign(Align.LEFT);
+			float num_width = darkerPaint.measureText(""+mContact.getUnreadMessages());
+			
+			canvas.drawText(""+mContact.getUnreadMessages(),shadow_radius+10 , start_height+sum_height-20, darkerPaint);
+			
+			int fontSize = 15;
+			
+			darkerPaint.setTextSize(fontSize);
+			
+			Resources res = getResources();
+			String new_messages_label_pt1 = res.getString(R.string.new_messages_pt1);
+			String new_messages_label;
+			if (mContact.getUnreadMessages() > 1)
+			{
+				new_messages_label = res.getString(R.string.new_messages_pt2_plur);
+			}
+			else
+			{
+				new_messages_label = res.getString(R.string.new_messages_pt2_sing);
+			}
+
+			
+			canvas.drawText( new_messages_label ,num_width+shadow_radius+10 ,start_height+sum_height-(fontSize+10+10), darkerPaint);
+			canvas.drawText(new_messages_label_pt1 ,num_width+shadow_radius+10 ,start_height+sum_height-(fontSize*2+10+10), darkerPaint);
+			
+		}
+		
+		
 		if (state_pressed)
 		{
 			Paint darkerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
