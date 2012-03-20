@@ -21,6 +21,7 @@ import java.util.Vector;
 import java.util.List;
 import android.app.Fragment;
 import android.app.ActionBar;
+import android.app.ActionBar.Tab;
 
 
 public class SheepMessenger extends FragmentActivity {
@@ -36,7 +37,6 @@ public class SheepMessenger extends FragmentActivity {
         
         
         ActionBar ab = getActionBar();
-        
         
         
         setContentView(R.layout.main);
