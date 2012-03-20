@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.content.Intent;
+import android.content.pm.FeatureInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -30,7 +31,14 @@ public class SheepMessenger extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        
+        requestWindowFeature(Window.FEATURE_ACTION_BAR);
+        
+        
+        ActionBar ab = getActionBar();
+        
+        
+        
         setContentView(R.layout.main);
         
            
