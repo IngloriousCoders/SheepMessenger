@@ -4,5 +4,7 @@
     <string name="menu_add">Hinzufügen</string>
     <string name="app_name">Messenger</string>
     <string name="menu_add_group">Gruppe hinzufügen</string>
+    <string name="tab_contacts_label">Kontakte</string>
+    <string name="tab_groups_label">Gruppen</string>
 
 </resources>

@@ -6,6 +6,9 @@ import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.app.Activity;
 import android.content.Context;
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
+
 
 import java.util.List;
 import java.util.Vector;
@@ -25,11 +28,11 @@ public class StartAdapter extends FragmentPagerAdapter {
     }
     @Override
     public Fragment getItem(int position) {
-        return mPages.get(position);
+    	return mPages.get(position);
     }
-    public void addPage(String classname)
+    public int addPage(String classname)
     {
     	mPages.add(Fragment.instantiate(mContext, classname));
+    	return mPages.size()-1;    	
     }
 }
-

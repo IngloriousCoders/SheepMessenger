@@ -37,11 +37,13 @@ public class SheepMessenger extends FragmentActivity {
         
         
         ActionBar ab = getActionBar();
-        
+        ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);             
+        		
         
         setContentView(R.layout.main);
         
-           
+        
+        
         StartAdapter viewpager_adp = new StartAdapter(getSupportFragmentManager(),this);
         viewpager_adp.addPage(ContactFragment.class.getName());
         viewpager_adp.addPage(GroupFragment.class.getName());
@@ -50,7 +52,22 @@ public class SheepMessenger extends FragmentActivity {
         vp.setAdapter(viewpager_adp);
 
         
+        Tab tab_contacts = ab.newTab();
+        tab_contacts.setText(R.string.tab_contacts_label);
+        Tab tab_groups = ab.newTab();
         
+        tab_groups.setText(R.string.tab_groups_label);
+        tab_contacts.setTabListener(new ActionBarTabListener(vp, 0));
+        tab_groups.setTabListener(new ActionBarTabListener(vp, 1));
+        ab.addTab(tab_contacts);
+        ab.addTab(tab_groups);
+        
+        List<Tab> start_tabs = new Vector<Tab>();
+        start_tabs.add(tab_contacts);
+        start_tabs.add(tab_groups);
+        StartPageChange vp_page_listener = new StartPageChange(getActionBar(), start_tabs);
+        
+        vp.setOnPageChangeListener(vp_page_listener);
 
    }
     @Override
