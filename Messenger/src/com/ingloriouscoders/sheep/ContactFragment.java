@@ -26,7 +26,7 @@ public class ContactFragment extends Fragment {
 		gv.setAdapter(adp);
 		
 		Contact special_contact = new Contact("user","Hans Peter");
-		special_contact.setUnreadMessages(3);
+		special_contact.setUnreadMessages(99);
 		adp.addContact(special_contact);
 		
 		for(int i=0;i<10;i++)
@@ -37,5 +37,6 @@ public class ContactFragment extends Fragment {
 		return mContentView;
 
     }
+	
 
 }

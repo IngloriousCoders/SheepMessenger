@@ -144,7 +144,7 @@ public class ContactBox extends View {
 		}
 		if (mContact.getUnreadMessages() > 0)
 		{
-			int start_height = box_height - (box_height*4)/6;
+			int start_height = box_height - (int)(box_height*0.4);
 			int end_height = box_height -  border_radius - shadow_radius -1;
 			int sum_height = end_height - start_height;
 			Path path = new Path();
@@ -171,16 +171,18 @@ public class ContactBox extends View {
 			
 			darkerPaint.setAlpha(255);
 			darkerPaint.setColor(Color.GREEN);
-			darkerPaint.setTextSize(sum_height-20);
+			darkerPaint.setTextSize(38);
 			darkerPaint.setTextAlign(Align.LEFT);
-			float num_width = darkerPaint.measureText(""+mContact.getUnreadMessages());
 			
-			canvas.drawText(""+mContact.getUnreadMessages(),shadow_radius+10 , start_height+sum_height-20, darkerPaint);
+			float num_height = darkerPaint.ascent()*-1;
+			float num_width = darkerPaint.measureText(""+mContact.getUnreadMessages());
+			float num_padding_bottom = (sum_height-num_height)/2;
+			
+			canvas.drawText(""+mContact.getUnreadMessages(),shadow_radius+10 , end_height-num_padding_bottom, darkerPaint);
 			
 			int fontSize = 15;
-			
 			darkerPaint.setTextSize(fontSize);
-			
+						
 			Resources res = getResources();
 			String new_messages_label_pt1 = res.getString(R.string.new_messages_pt1);
 			String new_messages_label;
@@ -192,10 +194,10 @@ public class ContactBox extends View {
 			{
 				new_messages_label = res.getString(R.string.new_messages_pt2_sing);
 			}
-
+			float label_height = darkerPaint.ascent();
 			
-			canvas.drawText( new_messages_label ,num_width+shadow_radius+10 ,start_height+sum_height-(fontSize+10+10), darkerPaint);
-			canvas.drawText(new_messages_label_pt1 ,num_width+shadow_radius+10 ,start_height+sum_height-(fontSize*2+10+10), darkerPaint);
+			canvas.drawText( new_messages_label ,num_width+shadow_radius+10 ,end_height-num_padding_bottom, darkerPaint);
+			canvas.drawText(new_messages_label_pt1 ,num_width+shadow_radius+10 ,end_height-num_padding_bottom+label_height, darkerPaint);
 			
 		}
 		
