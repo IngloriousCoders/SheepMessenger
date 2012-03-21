@@ -214,11 +214,17 @@ public class ContactBox extends View {
 			darkerPaint.setTextSize(38);
 			darkerPaint.setTextAlign(Align.LEFT);
 			
+			String num_label = ""+mContact.getUnreadMessages();
+			if (mContact.getUnreadMessages()>99)
+			{
+				num_label = "99+";
+			}
+			
 			float num_height = darkerPaint.ascent()*-1;
-			float num_width = darkerPaint.measureText(""+mContact.getUnreadMessages());
+			float num_width = darkerPaint.measureText(num_label);
 			float num_padding_bottom = (sum_height-num_height)/2;
 			
-			canvas.drawText(""+mContact.getUnreadMessages(),shadow_radius+10 , end_height-num_padding_bottom, darkerPaint);
+			canvas.drawText(num_label,shadow_radius+10 , end_height-num_padding_bottom, darkerPaint);
 			
 			int fontSize = 15;
 			darkerPaint.setTextSize(fontSize);
@@ -236,7 +242,7 @@ public class ContactBox extends View {
 			}
 			float label_height = darkerPaint.ascent();
 			
-			canvas.drawText( new_messages_label ,num_width+shadow_radius+10 ,end_height-num_padding_bottom, darkerPaint);
+			canvas.drawText(new_messages_label ,num_width+shadow_radius+10 ,end_height-num_padding_bottom, darkerPaint);
 			canvas.drawText(new_messages_label_pt1 ,num_width+shadow_radius+10 ,end_height-num_padding_bottom+label_height, darkerPaint);
 			
 		}
@@ -299,6 +305,10 @@ public class ContactBox extends View {
 	{
 		this.mContact = _contact;
 		initializeBitmap();
+	}
+	public Contact getContact()
+	{
+		return mContact;
 	}
 
 	

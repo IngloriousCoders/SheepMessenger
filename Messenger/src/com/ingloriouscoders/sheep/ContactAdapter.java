@@ -27,6 +27,16 @@ public class ContactAdapter extends BaseAdapter {
     public void addContact(Contact _contact)
     {
     	 mContacts.add(_contact);
+    	 this.notifyDataSetChanged();
+    }
+    public void removeContact(Contact _contact)
+    {
+    	if (mContacts.contains(_contact))
+    	{
+    		mContacts.remove(_contact);
+    		this.notifyDataSetChanged();
+    	}
+    	
     }
     
     public int getCount() {
@@ -57,6 +67,7 @@ public class ContactAdapter extends BaseAdapter {
     		cb = (ContactBox)convertView;
     	}
     	final Contact thiscontact = mContacts.get(position);
+    	final ContactAdapter ca = this;
     	    	
     	cb.setContact(thiscontact);
     	cb.setOnClickListener(new View.OnClickListener() {
@@ -69,6 +80,7 @@ public class ContactAdapter extends BaseAdapter {
                
          	}
     	});
+    	
     	
     	return cb;
     }

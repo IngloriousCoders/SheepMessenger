@@ -6,26 +6,21 @@ import android.support.v4.view.ViewPager;
 import android.content.Intent;
 import android.content.pm.FeatureInfo;
 import android.os.Bundle;
-import android.view.View;
+
 import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.widget.GridView;
+
 import android.widget.ImageView;
-import android.widget.AdapterView;
-import android.util.Log;
+
 import android.view.Menu;
 import android.view.MenuInflater;
 
 import java.util.Vector;
 import java.util.List;
-import android.app.Fragment;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 
 public class SheepMessenger extends FragmentActivity {
 	
-	private ImageView image;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {

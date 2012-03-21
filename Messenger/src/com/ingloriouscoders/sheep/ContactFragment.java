@@ -36,7 +36,7 @@ public class ContactFragment extends Fragment {
 		gv.setAdapter(adp);
 		
 		Contact special_contact = new Contact("user","Hans Peter","content://com.android.contacts/contacts/66/photo");
-		special_contact.setUnreadMessages(99);
+		special_contact.setUnreadMessages(5);
 		adp.addContact(special_contact);
 		
 		ContentResolver cr = mContext.getContentResolver();
@@ -73,7 +73,8 @@ public class ContactFragment extends Fragment {
 				last_string = c.getString(display_name_index);
 			}
 			
-			}
+		}
+		c.close();
 		return mContentView;
 
     }
