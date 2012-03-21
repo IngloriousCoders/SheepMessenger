@@ -1,9 +1,12 @@
 package com.ingloriouscoders.sheep;
 
+import android.util.Log;
+
 public class Contact {
 	
 	private String username;
 	private String showname;
+	private String photoURI = "";
 	private int unread_messages = 0;
 	
 	public Contact(String _username)
@@ -16,6 +19,16 @@ public class Contact {
 	{
 		this.username = _username;
 		this.showname = _showname;
+		
+	}
+	public Contact(String _username,String _showname,String photo_uri)
+	{
+		this.username = _username;
+		this.showname = _showname;
+		if (photo_uri != null)
+		{
+			this.photoURI = photo_uri;
+		}
 		
 	}
 	public void setShowName(String _showname)
@@ -37,6 +50,10 @@ public class Contact {
 	public int getUnreadMessages()
 	{
 		return unread_messages;
+	}
+	public String getPhotoURI()
+	{
+		return this.photoURI;
 	}
 	
 	public static Contact getPlaceholder()

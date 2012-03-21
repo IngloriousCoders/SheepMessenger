@@ -1,6 +1,9 @@
 package com.ingloriouscoders.sheep;
 
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import android.view.*;
 import android.graphics.*;
 import android.graphics.Paint.Align;
@@ -10,6 +13,9 @@ import android.graphics.PorterDuff.Mode;
 import android.view.InputEvent.*;
 import android.util.Log;
 import android.content.res.Resources;
+import android.net.Uri;	
+import android.content.res.AssetFileDescriptor;
+import java.io.InputStream;
 
 
 public class ContactBox extends View {
@@ -22,28 +28,33 @@ public class ContactBox extends View {
 	private int border_radius = 20;
 	private int shadow_radius = 10;
 	
+	private Bitmap standard_image = BitmapFactory.decodeResource(getResources(),R.drawable.nocontact);
+	
 	private boolean state_pressed = false;
 	
-	
+	private int label_max_len = 15;
 	private String contact_label = "Luca";
 	
+	private Context mContext;	
 	
 	private Contact mContact;
 	
 	public ContactBox(Context context){
 
 		super(context);
-		initializeBitmap();
+		mContext = context;
 		mContact = Contact.getPlaceholder();
+		initializeBitmap();
+		
 
 	}
 	public ContactBox(Context context,Contact _contact){
 
 		super(context);
 
-		
-		initializeBitmap();
+		mContext = context;
 		mContact = _contact;
+		initializeBitmap();
 	}
 	
 
@@ -67,7 +78,36 @@ public class ContactBox extends View {
 	private void initializeBitmap()
 	{
 		int box_height = width;
-		Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.nocontact);
+		
+		Bitmap bitmap = standard_image;
+		
+		if (mContact != null && mContact.getPhotoURI() != "")
+		{
+			try
+			{
+				Uri myUri = Uri.parse(mContact.getPhotoURI());
+				if (myUri == null)
+				{
+					Log.v("ContactBox","uri is null");
+				}
+				ContentResolver cr = mContext.getContentResolver();
+				if (cr == null)
+				{
+					Log.v("ContactBox","cr is null");
+				}
+				
+				InputStream is = cr.openInputStream(myUri);
+			
+				bitmap = BitmapFactory.decodeStream(is);
+			}
+			catch (FileNotFoundException e)
+			{
+				Log.v("ContactBox","Datei nicht gefunden");
+			}
+				
+			
+						
+		}
 		
 		int img_width = bitmap.getWidth();
 		int img_height = bitmap.getHeight();
@@ -101,7 +141,7 @@ public class ContactBox extends View {
 		width = getMeasuredWidth();
 		height = getMeasuredHeight();
 		
-		Log.v("ContactBox",width + "|" + height);
+		
 		
 		initializeBitmap();
 	}
@@ -217,7 +257,13 @@ public class ContactBox extends View {
 		textPaint.setTextSize(20);
 		textPaint.setTextAlign(Align.CENTER);
 		
-		canvas.drawText(this.mContact.getShowname(),width/2,box_height+30,textPaint);
+		String showLabel = this.mContact.getShowname();
+		if (showLabel.length() > label_max_len)
+		{
+			showLabel = showLabel.substring(0, label_max_len) + "...";
+		}
+		
+		canvas.drawText(showLabel,width/2,box_height+30,textPaint);
 		
 	}	
 	@Override
@@ -252,7 +298,9 @@ public class ContactBox extends View {
 	public void setContact(Contact _contact)
 	{
 		this.mContact = _contact;
+		initializeBitmap();
 	}
+
 	
 }
 	

@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.app.Activity;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
+import android.util.Log;
 
 public class ContactAdapter extends BaseAdapter {
     private Context mContext;
@@ -56,7 +57,7 @@ public class ContactAdapter extends BaseAdapter {
     		cb = (ContactBox)convertView;
     	}
     	final Contact thiscontact = mContacts.get(position);
-    	
+    	    	
     	cb.setContact(thiscontact);
     	cb.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View view) {
