@@ -23,8 +23,6 @@ import android.app.Fragment;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 
-
-
 public class SheepMessenger extends FragmentActivity {
 	
 	private ImageView image;

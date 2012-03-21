@@ -39,7 +39,7 @@ public class ContactAdapter extends BaseAdapter {
     }
 
     public long getItemId(int position) {
-        return 0;
+        return (long)position;
     }
 
     // create a new ImageView for each item referenced by the Adapter

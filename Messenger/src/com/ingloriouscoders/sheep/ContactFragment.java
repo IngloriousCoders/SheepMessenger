@@ -35,9 +35,9 @@ public class ContactFragment extends Fragment {
 		ContactAdapter adp = new ContactAdapter(getActivity());
 		gv.setAdapter(adp);
 		
-		/*Contact special_contact = new Contact("user","Hans Peter","content://com.android.contacts/contacts/66/photo");
+		Contact special_contact = new Contact("user","Hans Peter","content://com.android.contacts/contacts/66/photo");
 		special_contact.setUnreadMessages(99);
-		adp.addContact(special_contact);*/
+		adp.addContact(special_contact);
 		
 		ContentResolver cr = mContext.getContentResolver();
 		Log.v("ContentBox",Data.DISPLAY_NAME);
@@ -50,23 +50,30 @@ public class ContactFragment extends Fragment {
 
 		int display_name_index = c.getColumnIndex(Data.DISPLAY_NAME);
 		int photo_file_index = c.getColumnIndex(Data.PHOTO_URI );
+		int data_id_index = c.getColumnIndex(Data._ID);
+		String last_string = "";
 		
 		while(c.moveToNext())
 		{
-			String photo_uri = c.getString(photo_file_index);
-			
-			Contact contact;
-			if (photo_uri != null)
+			if (!c.getString(display_name_index).equals(last_string))
 			{
-				contact = new Contact("user",c.getString(display_name_index),photo_uri);
-			}
-			else
-			{
-				contact = new Contact("user",c.getString(display_name_index));
+				String photo_uri = c.getString(photo_file_index);
+				
+				Contact contact;
+				if (photo_uri != null)
+				{
+					contact = new Contact("user",c.getString(display_name_index),photo_uri);
+				}
+				else
+				{
+					contact = new Contact("user",c.getString(display_name_index));
+				}
+				
+				adp.addContact(contact);
+				last_string = c.getString(display_name_index);
 			}
 			
-			adp.addContact(contact);
-		}
+			}
 		return mContentView;
 
     }
