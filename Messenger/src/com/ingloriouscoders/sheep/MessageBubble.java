@@ -20,6 +20,7 @@ public class MessageBubble extends View {
 	public int bubblewidth = 500, bubbleheight, bubbleoffset = 10, bubblepadding = 50;
 	private List<String> lines;
 	public boolean incoming; public int bubblecolor;
+	public boolean clicked = false;
 	
 	public MessageBubble(Context context){
 		super(context);
@@ -91,6 +92,31 @@ public class MessageBubble extends View {
 		Paint borderPaint = new Paint();
 		borderPaint.setAntiAlias(true);
 		borderPaint.setColor(bubblecolor);
+		
+		float darkening1 = 1.5f;
+		float darkening2 = 1.2f;
+		
+		if (!this.clicked) {
+			darkening1 = 1.0f;
+			darkening2 = 0.7f;
+		}
+		
+		
+		float[] hsv = new float[3];
+		Color.colorToHSV(bubblecolor, hsv);
+		hsv[2] *= darkening1; // value component
+		int bubblecolor2 = Color.HSVToColor(hsv);
+		
+		float[] hsv2 = new float[3];
+		Color.colorToHSV(bubblecolor, hsv2);
+		hsv2[2] *= darkening2; // value component
+		int bubblecolor3 = Color.HSVToColor(hsv2);
+		
+		
+	    LinearGradient gradient = new LinearGradient(0, 0, 0, bubbleheight, bubblecolor2, bubblecolor3, Shader.TileMode.MIRROR);
+	    borderPaint.setDither(true);
+	    borderPaint.setShader(gradient);
+
 		
 		if (!this.incoming) {
 			int round_radius = 10;
@@ -192,5 +218,27 @@ public class MessageBubble extends View {
 		_bubbleheight = paddingup + ascent*3 + (ascent+top)*linecount - paddingdown;
 		
 		return _bubbleheight;
+	}
+	
+	@Override
+	public boolean onTouchEvent(MotionEvent touch_event)
+	{
+		switch (touch_event.getAction())
+		{
+		case MotionEvent.ACTION_DOWN:
+			clicked = true;
+			invalidate();
+			return true;
+		case MotionEvent.ACTION_UP:
+			clicked = false;
+			invalidate();
+			callOnClick();
+			return false;
+		default:
+			clicked = false;
+			invalidate();
+			return false;
+		
+		}
 	}
 }

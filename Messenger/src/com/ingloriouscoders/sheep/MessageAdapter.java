@@ -3,11 +3,15 @@ package com.ingloriouscoders.sheep;
 import android.widget.BaseAdapter;
 import android.widget.TableLayout.LayoutParams;
 import android.support.v4.view.ViewPager;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.content.Context;
 import java.util.List;
 import java.util.ArrayList;
+
+import com.ingloriouscoders.chatbackend.Message;
+
 import android.widget.GridView;
 import android.os.Parcelable;
 
@@ -79,7 +83,7 @@ public class MessageAdapter extends BaseAdapter {
     	
     	final MessageAdapter ma = this;
     	
-    	mb.setOnLongClickListener(new View.OnLongClickListener() {
+    	/*mb.setOnLongClickListener(new View.OnLongClickListener() {
         	public boolean onLongClick(View view) {
 
                 return false;
@@ -88,9 +92,21 @@ public class MessageAdapter extends BaseAdapter {
     	
     	mb.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View view) {
-
+        		mb.clicked = !mb.clicked;
          	}
     	});
+    	
+    	mb.setOnTouchListener(new View.OnTouchListener() {
+    	    public boolean onTouch(View v, MotionEvent event) {
+    	        if(event.getAction() == MotionEvent.ACTION_DOWN) {
+    	            mb.clicked = true;
+    	        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+    	            mb.clicked = false;
+    	        }
+    	        return true;
+    	    }
+    	});*/
+
     	
     	
     	return mb;

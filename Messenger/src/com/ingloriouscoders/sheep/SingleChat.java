@@ -3,6 +3,8 @@ package com.ingloriouscoders.sheep;
 import java.util.List;
 import java.util.Vector;
 
+import com.ingloriouscoders.chatbackend.Message;
+
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.app.ActionBar;

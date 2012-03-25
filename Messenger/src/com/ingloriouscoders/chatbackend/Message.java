@@ -1,4 +1,4 @@
-package com.ingloriouscoders.sheep;
+package com.ingloriouscoders.chatbackend;
 
 import android.graphics.Color;
 import android.util.Log;
