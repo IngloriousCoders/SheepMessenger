@@ -1,6 +1,7 @@
 package com.ingloriouscoders.sheep;
 
 import android.app.Activity;
+import android.content.Context;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import java.util.Vector;
 import java.util.List;
@@ -70,8 +72,14 @@ public class SheepMessenger extends FragmentActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.start, menu);
+        inflater.inflate(R.menu.start, menu);   
+        
         return true;
+    }
+    public void onPreferencesClicked(MenuItem item)
+    {
+    	Intent myIntent = new Intent(this,Preferences.class);
+    	this.startActivityForResult(myIntent, 0);
     }
     
 }

@@ -8,6 +8,7 @@
           android:title="@string/menu_add" 
           android:showAsAction="always"
           android:icon="@android:drawable/ic_menu_add"/>
+    <item android:id="@+id/menu_preferences" android:title="@string/menu_pref_label" android:onClick="onPreferencesClicked"></item>
   
     
 </menu>

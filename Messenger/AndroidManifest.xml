@@ -23,6 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:name="SingleChat"></activity>
+        <activity android:name=".Preferences"></activity>
     </application>
 
 </manifest>

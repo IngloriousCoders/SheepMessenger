@@ -9,6 +9,12 @@
     <string name="new_messages_pt1">NEUE</string>
     <string name="new_messages_pt2_sing">NACHRICHT</string>
     <string name="new_messages_pt2_plur">NACHRICHTEN</string>
+    <string name="menu_pref_label">Einstellungen</string>
+    <string name="pref_username_label">Benutzername</string>
+    <string name="pref_account_category_label">Kontodetails</string>
+    <string name="pref_password_label">Passwort</string>
+    <string name="pref_account_extended_label">Erweiterte Einstellungen</string>
+    <string name="pref_account_server_label">Serveradresse</string>
     
 
 </resources>

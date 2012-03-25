@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory
+	android:title="@string/pref_account_category_label"
+	android:key="account_details">
+	
+	<EditTextPreference
+		android:key="account_username"
+		android:title="@string/pref_username_label"
+		/>
+	<EditTextPreference 
+	    android:key="account_password"
+	    android:title="@string/pref_password_label"
+	    android:password="true"/>
+	<CheckBoxPreference 
+	    android:key="extended_account"
+	    android:title="@string/pref_account_extended_label"
+	    android:defaultValue="false"/>
+	<EditTextPreference 
+	    android:key="server_address"
+	    android:title="@string/pref_account_server_label"
+	    android:dependency="extended_account"/>
+	
+	</PreferenceCategory>
+</PreferenceScreen>
