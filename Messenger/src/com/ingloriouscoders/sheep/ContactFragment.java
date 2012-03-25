@@ -1,5 +1,7 @@
 package com.ingloriouscoders.sheep;
 
+import com.ingloriouscoders.chatbackend.Contact;
+
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.View;

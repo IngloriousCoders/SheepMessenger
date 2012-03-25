@@ -46,7 +46,7 @@ public class SheepMessenger extends FragmentActivity {
         StartAdapter viewpager_adp = new StartAdapter(getSupportFragmentManager(),this);
         viewpager_adp.addPage(ContactFragment.class.getName());
         viewpager_adp.addPage(GroupFragment.class.getName());
-        
+   
         ViewPager vp = (ViewPager)findViewById(R.id.viewpager);
         vp.setAdapter(viewpager_adp);
 

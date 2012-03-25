@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 import android.content.Context;
 import java.util.List;
 import java.util.ArrayList;
+
+import com.ingloriouscoders.chatbackend.Contact;
+
 import android.widget.GridView;
 import android.os.Parcelable;
 

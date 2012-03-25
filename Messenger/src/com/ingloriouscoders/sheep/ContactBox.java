@@ -17,6 +17,8 @@ import android.net.Uri;
 import android.content.res.AssetFileDescriptor;
 import java.io.InputStream;
 
+import com.ingloriouscoders.chatbackend.Contact;
+
 
 public class ContactBox extends View {
 	
