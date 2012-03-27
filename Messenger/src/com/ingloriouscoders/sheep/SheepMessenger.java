@@ -2,11 +2,14 @@ package com.ingloriouscoders.sheep;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.content.Intent;
 import android.content.pm.FeatureInfo;
 import android.os.Bundle;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 
 import android.view.Window;
 
@@ -18,8 +21,14 @@ import android.view.MenuItem;
 
 import java.util.Vector;
 import java.util.List;
+
+import com.ingloriouscoders.chatbackend.ChatContext;
+import com.ingloriouscoders.util.Debug;
+
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
+
+import com.ingloriouscoders.util.Debug;
 
 public class SheepMessenger extends FragmentActivity {
 	
@@ -81,5 +90,27 @@ public class SheepMessenger extends FragmentActivity {
     	Intent myIntent = new Intent(this,Preferences.class);
     	this.startActivityForResult(myIntent, 0);
     }
+    public void onClickConnect(MenuItem item)
+    {
+    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	
+    	
+    	ChatContext ctx = ChatContext.getChatContext(prefs.getString("account_username", ""), prefs.getString("account_password", ""));
+    	Debug dbg = Debug.getInstance();
+    	
+    	if (!ctx.isInitiated())
+    	{
+    		dbg.out("Fehler beim initiieren:" + ctx.getLastErrorMessage());
+    		return;
+    	}
+    	if (!ctx.connect())
+    	{
+    		dbg.out("Fehler beim verbinden:" + ctx.getLastErrorMessage());
+    		return;
+    	}
+    	
+    	dbg.out("Everything went good");
+    }
+
     
 }

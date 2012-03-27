@@ -78,6 +78,10 @@ public class ContactAdapter extends BaseAdapter {
                 Intent myIntent = new Intent(view.getContext(), SingleChat.class);
                 
                 myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                myIntent.putExtra("address", ((ContactBox)view).getContact().getAddress());
+                myIntent.putExtra("showname", ((ContactBox)view).getContact().getShowname());
+                myIntent.putExtra("username", ((ContactBox)view).getContact().getUsername());
+                myIntent.putExtra("photoURI", ((ContactBox)view).getContact().getPhotoURI());
                 ((Activity)mContext).startActivityForResult(myIntent, 0);
                 ((Activity)mContext).overridePendingTransition(R.anim.enterfromright, R.anim.leavetoleft);
                

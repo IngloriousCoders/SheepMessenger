@@ -15,7 +15,9 @@
 	    android:horizontalSpacing="10dp"
 	    android:stretchMode="columnWidth"
 	    android:gravity="center"
-	    
+	    android:fastScrollEnabled="true"
+	    android:smoothScrollbar="true"
+	    android:saveEnabled="true"
 		/>
 
 </LinearLayout>

@@ -6,6 +6,7 @@ public class Contact {
 	
 	private String username;
 	private String showname;
+	private String mAddress;
 	private String photoURI = "";
 	private int unread_messages = 0;
 	
@@ -55,10 +56,19 @@ public class Contact {
 	{
 		return this.photoURI;
 	}
+	public String getAddress()
+	{
+		return mAddress;
+	}
+	public void setAddress(String _address)
+	{
+		this.mAddress = _address;
+	}
 	
 	public static Contact getPlaceholder()
 	{
 		return new Contact("null","null name");
 	}
+	
 	
 }
