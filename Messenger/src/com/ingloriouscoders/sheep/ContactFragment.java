@@ -21,6 +21,7 @@ import android.util.Log;
 public class ContactFragment extends Fragment {
 	private View mContentView;
 	private Context mContext;
+	protected ContactAdapter adp;
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -34,7 +35,7 @@ public class ContactFragment extends Fragment {
 		mContext = container.getContext();
 		
 		GridView gv = (GridView)mContentView.findViewById(R.id.contactGridView);
-		ContactAdapter adp = new ContactAdapter(getActivity());
+		adp = new ContactAdapter(getActivity());
 		gv.setAdapter(adp);
 		
 		/*Contact special_contact = new Contact("user","Hans Peter","content://com.android.contacts/contacts/66/photo");

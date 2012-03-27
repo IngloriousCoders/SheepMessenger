@@ -2,6 +2,7 @@ package com.ingloriouscoders.chatbackend;
 
 import android.util.Log;
 
+
 public class Contact {
 	
 	private String username;
@@ -9,6 +10,8 @@ public class Contact {
 	private String mAddress;
 	private String photoURI = "";
 	private int unread_messages = 0;
+	private OnContactDataChanged mListener = null;
+	
 	
 	public Contact(String _username)
 	{
@@ -69,6 +72,23 @@ public class Contact {
 	{
 		return new Contact("null","null name");
 	}
+	public void setOnContactDataChangedListener(OnContactDataChanged _listener)
+	{
+		this.mListener = _listener;
+	}
 	
+	public final Contact thisclass = this;
+	public OnUnreadMessagesListener unreadListener = new OnUnreadMessagesListener() {
+		
+		@Override
+		public void onNewMessage(Contact _contact, int value) {
+			thisclass.unread_messages = value;
+			if (thisclass.mListener != null)
+			{
+				thisclass.mListener.dataChanged(thisclass);
+			}
+			
+		}
+	};
 	
 }

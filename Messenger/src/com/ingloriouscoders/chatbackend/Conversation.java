@@ -11,10 +11,13 @@ import android.util.Log;
 public class Conversation {
 	
 	private OnNewMessageListener mListener = null;
+	private OnUnreadMessagesListener mUnreadListener = null;
 	
 	private ChatContext mContext;
 	private Contact mOpposite;
 	protected Chat mChat;
+	
+	private int unreadCount = 0;
 	
 	private List<Message> history = new Vector<Message>();
 	
@@ -43,6 +46,7 @@ public class Conversation {
 	}
 	public List<Message> getHistory(int timestamp)
 	{
+		this.unreadCount = 0;
 		return history;
 	}
 	public void setOnNewMessageListener(OnNewMessageListener _listener)
@@ -113,12 +117,25 @@ public class Conversation {
 			}
 			
 			thisclass.addMessage(recieved_msg);
+			unreadCount++;
+			if (thisclass.mUnreadListener != null)
+			{
+				mUnreadListener.onNewMessage(thisclass.getOpposite(), thisclass.unreadCount);
+			}
 			if (thisclass.mListener != null)
 			{
 				mListener.onNewMessage(thisclass,recieved_msg );
 			}
 
+
 		}
 	};
-	
+	public void resetUnreadCount()
+	{
+		this.unreadCount = 0;
+	}
+	public void setOnUnreadMessagesListener(OnUnreadMessagesListener _listener)
+	{
+		this.mUnreadListener = _listener;
+	}
 }

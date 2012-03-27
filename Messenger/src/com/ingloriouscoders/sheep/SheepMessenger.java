@@ -23,6 +23,8 @@ import java.util.Vector;
 import java.util.List;
 
 import com.ingloriouscoders.chatbackend.ChatContext;
+import com.ingloriouscoders.chatbackend.Contact;
+import com.ingloriouscoders.chatbackend.Conversation;
 import com.ingloriouscoders.util.Debug;
 
 import android.app.ActionBar;
@@ -33,6 +35,9 @@ import com.ingloriouscoders.util.Debug;
 public class SheepMessenger extends FragmentActivity {
 	
     /** Called when the activity is first created. */
+	private ContactFragment mContactFragment = new ContactFragment();
+	private GroupFragment mGroupFragment = new GroupFragment();
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,8 +58,8 @@ public class SheepMessenger extends FragmentActivity {
         
         
         StartAdapter viewpager_adp = new StartAdapter(getSupportFragmentManager(),this);
-        viewpager_adp.addPage(ContactFragment.class.getName());
-        viewpager_adp.addPage(GroupFragment.class.getName());
+        viewpager_adp.addPage(mContactFragment);
+        viewpager_adp.addPage(mGroupFragment);
    
         ViewPager vp = (ViewPager)findViewById(R.id.viewpager);
         vp.setAdapter(viewpager_adp);
@@ -107,6 +112,18 @@ public class SheepMessenger extends FragmentActivity {
     	{
     		dbg.out("Fehler beim verbinden:" + ctx.getLastErrorMessage());
     		return;
+    	}
+    	
+    	if (mContactFragment.adp != null)
+    	{
+    	
+    		for (int i=0;i<mContactFragment.adp.getCount();i++)
+    		{
+    			Contact ctc = mContactFragment.adp.mContacts.get(i);
+    			Conversation newconv = Conversation.spawnConversation(ctc, ctx);
+    			newconv.setOnUnreadMessagesListener(ctc.unreadListener);
+    		}
+    			
     	}
     	
     	dbg.out("Everything went good");

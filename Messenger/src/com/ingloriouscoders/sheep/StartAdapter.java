@@ -30,9 +30,9 @@ public class StartAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
     	return mPages.get(position);
     }
-    public int addPage(String classname)
+    public int addPage(Fragment obj)
     {
-    	mPages.add(Fragment.instantiate(mContext, classname));
+    	mPages.add(obj);
     	return mPages.size()-1;    	
     }
 }

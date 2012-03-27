@@ -54,6 +54,9 @@ public class SingleChat extends FragmentActivity {
     /** Called when the activity is first created. */
 	Conversation mConversation;
 	
+	final static int default_incomingColor = Color.rgb(50,166,166);
+	final static int default_outgoingColor = Color.rgb(109,217,110);
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,6 +128,15 @@ public class SingleChat extends FragmentActivity {
         dbg.out("Historysize=" + history.size());        
         for (int i=0;i<history.size();i++)
         {
+        	Message msg = history.get(i);
+        	if (msg.getIncoming())
+        	{
+        		msg.setColor(default_incomingColor);
+        	}
+        	else
+        	{
+        		msg.setColor(default_outgoingColor);
+        	}
         	msga.addMessage(history.get(i));
         }
                 
@@ -132,8 +144,9 @@ public class SingleChat extends FragmentActivity {
 			
 			@Override
 			public void onNewMessage(Conversation _conversation, Message _newmessage) {
-				_newmessage.setColor(Color.rgb(109,217,110));
+				_newmessage.setColor(default_incomingColor);
 				msga.addMessage(_newmessage);	
+				mConversation.resetUnreadCount();
 				listview.smoothScrollToPosition(msga.getCount()-1);
 				Log.v("SingleChat","Message recieved");
 			}
@@ -161,7 +174,7 @@ public class SingleChat extends FragmentActivity {
 					return;
 				}				
 				Message msg = myconv.prepareMessage();
-				msg.setColor(Color.rgb(29, 106, 115));
+				msg.setColor(default_outgoingColor);
 				msg.setMessageText(content.toString());
 				msg.send();	
 				msga.addMessage(msg);

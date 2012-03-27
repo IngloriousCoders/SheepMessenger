@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import com.ingloriouscoders.chatbackend.Contact;
+import com.ingloriouscoders.chatbackend.OnContactDataChanged;
 
 import android.widget.GridView;
 import android.os.Parcelable;
@@ -21,16 +22,31 @@ import android.util.Log;
 
 public class ContactAdapter extends BaseAdapter {
     private Context mContext;
-    private List<Contact> mContacts = new ArrayList<Contact>();
+    protected List<Contact> mContacts = new ArrayList<Contact>();
 
+    final private ContactAdapter thisclass = this;
+    private OnContactDataChanged dataListener = new OnContactDataChanged() {
+		
+		@Override
+		public void dataChanged(Contact _contact) {
+			Log.v("ContactAdapter","Unread changed. address=" + _contact.getAddress() + " | unread=" + _contact.getUnreadMessages());
+			if (mContacts.contains(_contact))
+			{
+				Log.v("contactadapter","found");
+			}
+			thisclass.notifyDataSetChanged();
+		}
+	};
+    
     public ContactAdapter(Context c) {
         mContext = c;
     }
 
     public void addContact(Contact _contact)
     {
-    	 mContacts.add(_contact);
-    	 this.notifyDataSetChanged();
+    	_contact.setOnContactDataChangedListener(dataListener); 
+    	mContacts.add(_contact);
+    	this.notifyDataSetChanged();
     }
     public void removeContact(Contact _contact)
     {
