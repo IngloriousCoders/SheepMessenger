@@ -21,7 +21,7 @@ public class Conversation {
 	{
 		for (int i=0;i<_ctx.getActiveConversations().size();i++)
 		{
-			if (_ctx.getActiveConversations().get(i).getOpposite() == _opposite)
+			if (_ctx.getActiveConversations().get(i).getOpposite().getUsername() == _opposite.getUsername())
 			{
 				return _ctx.getActiveConversations().get(i);
 			}
@@ -34,13 +34,11 @@ public class Conversation {
 	{
 		mContext = _ctx;
 		mOpposite = _opposite;
-		
-		
-		
+		mContext.etablishConversation(this);		
 	}
 	public Contact getOpposite()
 	{
-		return Contact.getPlaceholder();
+		return mOpposite;
 	}
 	public List<Message> getHistory(int timestamp)
 	{
@@ -57,9 +55,9 @@ public class Conversation {
 	public Message prepareMessage()
 	{
 		Message newmsg = new Message();
-		newmsg.setSender(getOpposite().getShowname());
+		newmsg.setSender(mContext.getUserShowname());
 		newmsg.setIncoming(false);
-		newmsg.setColor(2);
+
 		newmsg.setConversation(this);
 		return newmsg;
 	}	
@@ -71,10 +69,19 @@ public class Conversation {
 	{
 		if (_msg.mConversation != this)
 		{
+			Log.v("chatbackend","Message is no child of me");
+			return false;
+		}
+		if (mChat == null)
+		{
+			Log.v("chatbackend","Chat is null");
 			return false;
 		}
 		try {
-		    mChat.sendMessage(_msg.getMessageText());
+			org.jivesoftware.smack.packet.Message newMessage = new org.jivesoftware.smack.packet.Message();
+			newMessage.setBody(_msg.getMessageText());
+							
+		    mChat.sendMessage(newMessage);
 		}
 		catch (XMPPException e) {
 		    Log.v("chatbackend","Fehler beim Zustellen der Nachricht: '" + _msg.getMessageText() + "'");
@@ -87,14 +94,14 @@ public class Conversation {
 	protected org.jivesoftware.smack.MessageListener smack_listener =  new org.jivesoftware.smack.MessageListener() {
 		@Override
 		public void processMessage(Chat _chat,org.jivesoftware.smack.packet.Message _msg) {
-			
 			Message recieved_msg = new Message(_msg.getBody(),thisclass.getOpposite().getShowname(),true,1);
-			
+					
 			thisclass.addMessage(recieved_msg);
 			if (thisclass.mListener != null)
 			{
 				mListener.onNewMessage(thisclass,recieved_msg );
 			}
+
 		}
 	};
 	

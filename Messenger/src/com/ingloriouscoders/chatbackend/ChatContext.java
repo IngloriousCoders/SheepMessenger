@@ -6,10 +6,15 @@ import java.util.Vector;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.provider.ProviderManager;
+import org.jivesoftware.smackx.provider.MessageEventProvider;
+import org.jivesoftware.smackx.pubsub.packet.PubSubNamespace;
+import org.jivesoftware.smackx.pubsub.provider.SubscriptionProvider;
 
 import android.os.NetworkOnMainThreadException;
 import android.util.Log;
@@ -68,6 +73,14 @@ public class ChatContext {
 	{
 		return true;
 	}
+	public boolean isConnected()
+	{
+		if (mConnection == null)
+		{
+			return false;
+		}
+		return mConnection.isConnected();
+	}
 	public boolean connect()
 	{
 		if (!initiated){
@@ -85,7 +98,12 @@ public class ChatContext {
 		{
 			mError = "Verbindungsfehler:" + e.getMessage();
 			return false;
-		}		
+		}	
+		ProviderManager pm = ProviderManager.getInstance();
+
+		// Add extension provider
+		pm.addExtensionProvider("x", "jabber:x:event",new MessageEventProvider());
+		
 		try
 		{
 			mConnection.login(mUsername,mPassword);
@@ -143,8 +161,10 @@ public class ChatContext {
 		{
 			server_port = default_port;
 		}
+        
 		
 		ConnectionConfiguration config = new ConnectionConfiguration(server_address,server_port,"googlemail.com");
+		
 		config.setKeystoreType("bks");
 		SASLAuthentication.unsupportSASLMechanism("PLAIN");
 		mConnection = new XMPPConnection(config);
@@ -169,7 +189,16 @@ public class ChatContext {
 	public boolean etablishConversation(Conversation _conv)
 	{
 		ChatManager cm = mConnection.getChatManager();
+		if (_conv.getOpposite().getAddress() == null)
+		{
+			Log.v("chatbackend","Address is " + _conv.getOpposite().getAddress());
+			Log.v("chatbackend","Username is " + _conv.getOpposite().getUsername());
+			Log.v("chatbackend","Conversation address is null");
+			return false;
+		}
+		//
 		_conv.mChat = cm.createChat(_conv.getOpposite().getAddress(),_conv.smack_listener);
+		//Log.v("chatbackend","Conversation with" + _conv.getOpposite().getShowname() + " etablished successfully");
 		return true;
 	}
 	

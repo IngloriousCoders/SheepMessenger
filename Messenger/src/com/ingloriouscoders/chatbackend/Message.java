@@ -52,7 +52,7 @@ public class Message {
 	}
 	public void setIncoming(boolean _state)
 	{
-		this.incoming = true;
+		this.incoming = _state;
 	}
 	public void setColor(int _color)
 	{

@@ -32,7 +32,7 @@ public class MessageAdapter extends BaseAdapter {
     public void addMessage(Message _msg)
     {
     	mMessageBubble.add(_msg);
-    	 this.notifyDataSetChanged();
+    	this.notifyDataSetChanged();
     }
     public void removeMessage(Message _msg)
     {
