@@ -21,6 +21,7 @@ import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.GridView;
@@ -47,6 +48,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView.OnEditorActionListener;
 
+import android.widget.Toast;
+
 public class SingleChat extends FragmentActivity {
     /** Called when the activity is first created. */
 	Conversation mConversation;
@@ -55,7 +58,16 @@ public class SingleChat extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+        
+        ActionBar ab = getActionBar();
+        ab.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg));
+        
+        
+        ab.setDisplayHomeAsUpEnabled(true);
+        
+        
+        
         
         setContentView(R.layout.singlechat);
         
@@ -67,7 +79,7 @@ public class SingleChat extends FragmentActivity {
         String photoURI = extras.getString("photoURI");
         
         
-         Debug dbg = Debug.getInstance(); 
+        Debug dbg = Debug.getInstance(); 
         
         if (username == null ||
         	showname == null ||
@@ -77,6 +89,8 @@ public class SingleChat extends FragmentActivity {
         	dbg.out("Some arguments were strange");
         	finish();
         }
+        
+       
         
         Contact opposite = new Contact(username,showname,photoURI);
         opposite.setAddress(address);
@@ -101,7 +115,11 @@ public class SingleChat extends FragmentActivity {
  
         mConversation = Conversation.spawnConversation(opposite, ctx);
           
+        ab.setTitle("Chat mit " + mConversation.getOpposite().getShowname());
+        Toast.makeText(this, "Chatting with " + mConversation.getOpposite().getShowname()  + "|" + mConversation.getOpposite().getAddress(), Toast.LENGTH_LONG).show();
+        
         List<Message> history = mConversation.getHistory(0);
+        dbg.out("Historysize=" + history.size());        
         for (int i=0;i<history.size();i++)
         {
         	msga.addMessage(history.get(i));
@@ -113,6 +131,7 @@ public class SingleChat extends FragmentActivity {
 			public void onNewMessage(Conversation _conversation, Message _newmessage) {
 				_newmessage.setColor(Color.rgb(109,217,110));
 				msga.addMessage(_newmessage);	
+				gridview.smoothScrollToPosition(msga.getCount()-1);
 				Log.v("SingleChat","Message recieved");
 			}
 		});
@@ -143,6 +162,7 @@ public class SingleChat extends FragmentActivity {
 				msg.setMessageText(content.toString());
 				msg.send();	
 				msga.addMessage(msg);
+				gridview.smoothScrollToPosition(msga.getCount()-1);
 			}
 		});
         EditText sendfield = (EditText)findViewById(R.id.msg_field);
@@ -188,5 +208,16 @@ public class SingleChat extends FragmentActivity {
         super.onPause();
         
         overridePendingTransition(R.anim.enterfromleft, R.anim.leavetoright);
+   }
+    @Override
+   public boolean onOptionsItemSelected(MenuItem item)
+   {
+    	switch (item.getItemId()) {
+        	case android.R.id.home:
+        		finish();
+        		return true;
+        	default:
+        		return super.onOptionsItemSelected(item);
+    	}
    }
 }

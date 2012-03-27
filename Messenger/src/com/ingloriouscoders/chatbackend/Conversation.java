@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Vector;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.XMPPError;
 
 import android.util.Log;
 
@@ -19,13 +20,13 @@ public class Conversation {
 	
 	public static Conversation spawnConversation(Contact _opposite,ChatContext _ctx)
 	{
-		for (int i=0;i<_ctx.getActiveConversations().size();i++)
+		List<Conversation> active_conv = _ctx.getActiveConversations();
+		for (int i=0;i<active_conv.size();i++)
 		{
-			if (_ctx.getActiveConversations().get(i).getOpposite().getUsername() == _opposite.getUsername())
+			if (active_conv.get(i).getOpposite().getAddress().equals(_opposite.getAddress()) )
 			{
 				return _ctx.getActiveConversations().get(i);
 			}
-				
 		}
 		return new Conversation(_opposite, _ctx);
 	}
@@ -64,6 +65,7 @@ public class Conversation {
 	private void addMessage(Message _msg)
 	{
 		history.add(_msg);
+		Log.v("chatbackend","added Message: Size=" + history.size());
 	}
 	protected boolean sendMessage(Message _msg)
 	{
@@ -86,6 +88,10 @@ public class Conversation {
 		catch (XMPPException e) {
 		    Log.v("chatbackend","Fehler beim Zustellen der Nachricht: '" + _msg.getMessageText() + "'");
 		}
+		finally
+		{
+			this.addMessage(_msg);
+		}
 		
 		return true;
 	}
@@ -96,6 +102,16 @@ public class Conversation {
 		public void processMessage(Chat _chat,org.jivesoftware.smack.packet.Message _msg) {
 			Message recieved_msg = new Message(_msg.getBody(),thisclass.getOpposite().getShowname(),true,1);
 					
+			if (_msg.getType() == org.jivesoftware.smack.packet.Message.Type.error)
+			{
+				
+				
+				XMPPError myerr = _msg.getError();
+				Log.v("chatbackend","Fehler bei der Übermittlung: " + myerr.getMessage() + " | " + myerr.getCode());
+				
+				return;
+			}
+			
 			thisclass.addMessage(recieved_msg);
 			if (thisclass.mListener != null)
 			{

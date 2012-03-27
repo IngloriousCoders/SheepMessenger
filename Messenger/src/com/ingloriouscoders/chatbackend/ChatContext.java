@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
+import org.jivesoftware.smack.ChatManagerListener;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
@@ -119,9 +120,30 @@ public class ChatContext {
 			mError = e.getMessage();
 			return false;			
 		}
+		final ChatContext thisctx = this;
+		ChatManager chatmanager = mConnection.getChatManager();
+		chatmanager.addChatListener(
+			    new ChatManagerListener() {
+			        @Override
+			        public void chatCreated(Chat chat, boolean createdLocally)
+			        {
+			            if (!createdLocally)
+			            {
+			            	Contact newcontact = Contact.getPlaceholder();
+			            	newcontact.setAddress(chat.getParticipant());
+			            	Log.v("chatbackend","Chat Prompet from address" + newcontact.getAddress());
+			            	Conversation newconv = Conversation.spawnConversation(newcontact, thisctx);
+			            	newconv.mChat = chat;
+			            	newconv.mChat.addMessageListener(newconv.smack_listener);
+			            }
+			                
+			        }
+			    });
 		
-		
-		
+		Presence presence = new Presence(Presence.Type.available);
+		presence.setStatus("Online mit SheepMessenger");
+		// Send the packet (assume we have a Connection instance called "con").
+		mConnection.sendPacket(presence);
 		return true;
 	}
 	public boolean setAccount(String username,String password)
@@ -181,11 +203,10 @@ public class ChatContext {
 	{
 		return initiated;
 	}
-	public final List<Conversation> getActiveConversations()
+	public List<Conversation> getActiveConversations()
 	{
 		return activeConversations;
 	}
-	
 	public boolean etablishConversation(Conversation _conv)
 	{
 		ChatManager cm = mConnection.getChatManager();
@@ -199,6 +220,7 @@ public class ChatContext {
 		//
 		_conv.mChat = cm.createChat(_conv.getOpposite().getAddress(),_conv.smack_listener);
 		//Log.v("chatbackend","Conversation with" + _conv.getOpposite().getShowname() + " etablished successfully");
+		activeConversations.add(_conv);
 		return true;
 	}
 	
