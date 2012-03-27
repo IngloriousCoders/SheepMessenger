@@ -24,7 +24,7 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.GridView;
+import android.widget.ListView	;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.content.Intent;
@@ -109,9 +109,12 @@ public class SingleChat extends FragmentActivity {
     		return;
     	}
         
-        final GridView gridview = (GridView) findViewById(R.id.messagesGridView);
+        final ListView listview = (ListView) findViewById(R.id.messageslistview);
+        
+        listview.setDivider(null);
+        
         final MessageAdapter msga = new MessageAdapter(this);
-        gridview.setAdapter(msga);
+        listview.setAdapter(msga);
  
         mConversation = Conversation.spawnConversation(opposite, ctx);
           
@@ -131,7 +134,7 @@ public class SingleChat extends FragmentActivity {
 			public void onNewMessage(Conversation _conversation, Message _newmessage) {
 				_newmessage.setColor(Color.rgb(109,217,110));
 				msga.addMessage(_newmessage);	
-				gridview.smoothScrollToPosition(msga.getCount()-1);
+				listview.smoothScrollToPosition(msga.getCount()-1);
 				Log.v("SingleChat","Message recieved");
 			}
 		});
@@ -162,7 +165,7 @@ public class SingleChat extends FragmentActivity {
 				msg.setMessageText(content.toString());
 				msg.send();	
 				msga.addMessage(msg);
-				gridview.smoothScrollToPosition(msga.getCount()-1);
+				listview.smoothScrollToPosition(msga.getCount()-1);
 			}
 		});
         EditText sendfield = (EditText)findViewById(R.id.msg_field);

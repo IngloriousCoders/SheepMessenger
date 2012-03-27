@@ -8,19 +8,20 @@
  <RelativeLayout 
      android:layout_width="match_parent"
      android:layout_height="match_parent">
-        <GridView
+        <ListView
             xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/messagesGridView"
+            android:id="@+id/messageslistview"
+            android:dividerHeight="0px"
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
             android:columnWidth="260dp"
             android:gravity="left"
             android:horizontalSpacing="10dp"
-            android:numColumns="1"
             android:stackFromBottom="true" 
-            android:layout_marginBottom="50dp">
+            android:layout_marginBottom="50dp"
+            >
 
-        </GridView>
+        </ListView>
 
         <LinearLayout
             android:layout_width="match_parent"
