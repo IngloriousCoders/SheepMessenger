@@ -39,7 +39,7 @@ public class MessageBubble extends View {
 	protected void onMeasure(int width,int height)
 	{
 		int measuredWidth = MeasureSpec.getSize(width);
-		int measuredHeight = MeasureSpec.getSize(height);
+		int measuredHeight = this.calculateHeight() + this.bubbleoffset;
 		setMeasuredDimension( measuredWidth, measuredHeight);
 	}
 	
@@ -59,7 +59,6 @@ public class MessageBubble extends View {
 		textPaint.setTextSize(20);
 		textPaint.setColor(Color.BLACK);
 		
-		
 		//Algorithmus fuer die Zeilenumbrueche. Die einzelnen Textzeilen werden in der List "lines" gespeichert.
 		lines  = new ArrayList<String>();
 		int destinationWidth = bubblewidth - paddingleft - (paddingright * 5);
@@ -78,9 +77,13 @@ public class MessageBubble extends View {
 				break;
 			}
 			
-			processedText = processingText.substring(0, processingText.lastIndexOf(" ")+1);
-			lines.add(processedText);
+			if (processingText.lastIndexOf(" ") == -1) {
+				processedText = processingText;
+			} else {
+				processedText = processingText.substring(0, processingText.lastIndexOf(" ")+1);
+			}
 			
+			lines.add(processedText);
 			currentText = currentText.substring(processedText.length(), currentText.length());
 		}
 		
@@ -201,6 +204,7 @@ public class MessageBubble extends View {
 		while (!linesFinished) {
 			int chars = textPaint.breakText(msgtext, true, destinationWidth, null);
 			
+			
 			if (currentText.length() > chars) {
 				processingText = currentText.substring(0, chars);
 			} else {
@@ -209,7 +213,58 @@ public class MessageBubble extends View {
 				break;
 			}
 			
-			processedText = processingText.substring(0, processingText.lastIndexOf(" ")+1);
+			if (processingText.lastIndexOf(" ") == -1) {
+				processedText = processingText;
+			} else {
+				processedText = processingText.substring(0, processingText.lastIndexOf(" ")+1);
+			}
+			
+			linecount++;
+			
+			currentText = currentText.substring(processedText.length(), currentText.length());
+		}
+		
+		_bubbleheight = paddingup + ascent*3 + (ascent+top)*linecount - paddingdown;
+		
+		return _bubbleheight;
+	}
+	
+	static public int calculateHeight(String msgtext) {
+		int _bubbleheight = 0;
+		final int paddingleft = 10, paddingright = 10, paddingup = 10, paddingdown = 10;
+		final int bubblewidth = 500, bubbleheight, bubbleoffset = 10, bubblepadding = 50;
+		
+		Paint textPaint = new Paint();
+		textPaint.setAntiAlias(true);
+		FontMetrics fm = textPaint.getFontMetrics();
+		int ascent = Math.abs((int) fm.ascent);
+		int top = Math.abs((int) fm.top);	
+		textPaint.setTextSize(20);
+		textPaint.setColor(Color.BLACK);
+		int linecount = 0;
+		int destinationWidth = bubblewidth - paddingleft - (paddingright * 4);
+		msgtext = msgtext.trim();
+		boolean linesFinished = false;
+		String currentText = msgtext, processingText = "", processedText;
+		
+		while (!linesFinished) {
+			int chars = textPaint.breakText(msgtext, true, destinationWidth, null);
+			
+			
+			if (currentText.length() > chars) {
+				processingText = currentText.substring(0, chars);
+			} else {
+				linecount++;
+				linesFinished = true;
+				break;
+			}
+			
+			if (processingText.lastIndexOf(" ") == -1) {
+				processedText = processingText;
+			} else {
+				processedText = processingText.substring(0, processingText.lastIndexOf(" ")+1);
+			}
+			
 			linecount++;
 			
 			currentText = currentText.substring(processedText.length(), currentText.length());

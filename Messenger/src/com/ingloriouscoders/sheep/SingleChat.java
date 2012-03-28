@@ -57,6 +57,7 @@ public class SingleChat extends FragmentActivity {
 	
 	final static int default_incomingColor = Color.rgb(50,166,166);
 	final static int default_outgoingColor = Color.rgb(109,217,110);
+
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -143,8 +144,7 @@ public class SingleChat extends FragmentActivity {
 			@Override
 			public void onNewMessage(Conversation _conversation, Message _newmessage) {
 				_newmessage.setColor(default_incomingColor);
-				msga.addMessage(_newmessage);	
-				listview.smoothScrollToPosition(msga.getCount());
+				msga.addScrolledMessage(_newmessage, listview);
 				Log.v("SingleChat","Message recieved");
 				_conversation.resetUnreadCount();
 			}
@@ -230,7 +230,14 @@ public class SingleChat extends FragmentActivity {
         overridePendingTransition(R.anim.enterfromleft, R.anim.leavetoright);
         
    }
-    @Override
+   
+   @Override
+   public void onStop() {
+	   super.onStop();
+	   mConversation.setOnNewMessageListener(null);
+   }
+    
+   @Override
    public boolean onOptionsItemSelected(MenuItem item)
    {
     	switch (item.getItemId()) {

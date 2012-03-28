@@ -1,6 +1,7 @@
 package com.ingloriouscoders.sheep;
 
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.TableLayout.LayoutParams;
 import android.support.v4.view.ViewPager;
 import android.view.MotionEvent;
@@ -34,6 +35,14 @@ public class MessageAdapter extends BaseAdapter {
     	mMessageBubble.add(_msg);
     	this.notifyDataSetChanged();
     }
+    
+    public void addScrolledMessage(Message _msg, ListView lview)
+    {
+    	mMessageBubble.add(_msg);
+		lview.smoothScrollBy(1000, MessageBubble.calculateHeight(_msg.getMessageText()));
+    	this.notifyDataSetChanged();
+    }
+    
     public void removeMessage(Message _msg)
     {
     	if (mMessageBubble.contains(_msg))
