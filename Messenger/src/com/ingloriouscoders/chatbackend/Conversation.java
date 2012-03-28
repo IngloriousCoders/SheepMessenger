@@ -119,14 +119,21 @@ public class Conversation {
 			
 			thisclass.addMessage(recieved_msg);
 			unreadCount++;
+			
 			if (thisclass.mUnreadListener != null)
 			{
 				mUnreadListener.onNewMessage(thisclass.getOpposite(), thisclass.unreadCount);
+			}
+			if (Conversation.this.getContext().notificationNewMessage != null)
+			{
+				Conversation.this.getContext().notificationNewMessage.onNewMessage(thisclass,recieved_msg);
 			}
 			if (thisclass.mListener != null)
 			{
 				mListener.onNewMessage(thisclass,recieved_msg );
 			}
+		
+			
 
 
 		}

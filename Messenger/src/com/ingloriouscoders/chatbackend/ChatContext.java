@@ -40,6 +40,8 @@ public class ChatContext {
 	
 	private static ChatContext mInstance;
 	
+	protected OnNewMessageListener notificationNewMessage;
+	
 	public static ChatContext getChatContext(String _username,String _password)
 	{
 		if (mInstance == null)
@@ -222,6 +224,10 @@ public class ChatContext {
 		//Log.v("chatbackend","Conversation with" + _conv.getOpposite().getShowname() + " etablished successfully");
 		activeConversations.add(_conv);
 		return true;
+	}
+	public void setOnNewMessageListener(OnNewMessageListener _listener)
+	{
+		notificationNewMessage = _listener;
 	}
 	
 }

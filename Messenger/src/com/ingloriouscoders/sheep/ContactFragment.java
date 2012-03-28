@@ -15,6 +15,7 @@ import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DataSetObserver;
 import android.util.Log;
 
 
@@ -34,9 +35,9 @@ public class ContactFragment extends Fragment {
 		mContentView = inflater.inflate(R.layout.contacts, null);
 		mContext = container.getContext();
 		
-		GridView gv = (GridView)mContentView.findViewById(R.id.contactGridView);
-		adp = new ContactAdapter(getActivity());
-		gv.setAdapter(adp);
+		ContactGrid gv = (ContactGrid)mContentView.findViewById(R.id.contactGridView);
+		
+		adp = (ContactAdapter)gv.getAdapter();
 		
 		/*Contact special_contact = new Contact("user","Hans Peter","content://com.android.contacts/contacts/66/photo");
 		special_contact.setAddress("thebkfamily@googlemail.com");

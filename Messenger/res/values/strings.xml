@@ -16,6 +16,7 @@
     <string name="pref_account_extended_label">Erweiterte Einstellungen</string>
     <string name="pref_account_server_label">Serveradresse</string>
     <string name="button_send">Senden</string>
+    <string name="service_name">SheepMessenger Chat Service</string>
     
 
 </resources>

@@ -1,13 +1,18 @@
 package com.ingloriouscoders.sheep;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.text.style.ClickableSpan;
 import android.content.Intent;
 import android.content.pm.FeatureInfo;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 
@@ -15,9 +20,15 @@ import android.view.Window;
 
 import android.widget.ImageView;
 
+import android.view.ActionProvider;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
+import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.MenuItem.OnActionExpandListener;
+import android.view.MenuItem.OnMenuItemClickListener;
 
 import java.util.Vector;
 import java.util.List;
@@ -32,12 +43,15 @@ import android.app.ActionBar.Tab;
 
 import com.ingloriouscoders.util.Debug;
 import android.widget.Toast;
+import android.util.Log;
 
 public class SheepMessenger extends FragmentActivity {
 	
     /** Called when the activity is first created. */
 	private ContactFragment mContactFragment = new ContactFragment();
 	private GroupFragment mGroupFragment = new GroupFragment();
+	private ChatService mChatService;
+	private ChatContext mChatContext;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,8 +96,42 @@ public class SheepMessenger extends FragmentActivity {
         StartPageChange vp_page_listener = new StartPageChange(getActionBar(), start_tabs);
         
         vp.setOnPageChangeListener(vp_page_listener);
+        startService();
+        if (mChatService != null)
+    	{
+    		mChatService.setShowNofication(false);
+    	}
 
    }
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+		public void onServiceConnected(ComponentName className, IBinder binder) {
+			mChatService = ((ChatService.LocalBinder) binder).getService();
+			
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SheepMessenger.this);
+	    	mChatContext = mChatService.getChatContext(prefs.getString("account_username", ""), prefs.getString("account_password", ""));
+			
+	    	if (mContactFragment.adp != null)
+	    	{
+	    	
+	    		for (int i=0;i<mContactFragment.adp.getCount();i++)
+	    		{
+	    			Contact ctc = mContactFragment.adp.mContacts.get(i);
+	    			Conversation newconv = Conversation.spawnConversation(ctc, mChatContext);
+	    			newconv.setOnUnreadMessagesListener(ctc.unreadListener);
+	    		}
+	    			
+	    	}
+	    	
+			Toast.makeText(SheepMessenger.this, "Connected",
+					Toast.LENGTH_SHORT).show();
+		}
+
+		public void onServiceDisconnected(ComponentName className) {
+			mChatService = null;
+		}
+	};
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -98,48 +146,36 @@ public class SheepMessenger extends FragmentActivity {
     }
     public void onClickConnect(MenuItem item)
     {
-    	Debug dbg = Debug.getInstance();
-    	
-    	int code = setupConnection();
-    	
-    	if (code == 1)
-    		Toast.makeText(this,"Verbindung erfolgreich!", Toast.LENGTH_LONG).show();
-    	else if (code == -1)
-    		Toast.makeText(this,"Verbindungsproblem beim initieren", Toast.LENGTH_LONG).show();
-    	else if (code == -2)
-    		Toast.makeText(this,"Verbindungsproblem beim verbinden", Toast.LENGTH_LONG).show();
-    	else 
-    		Toast.makeText(this,"Unbekanntes Verbindungsproblem", Toast.LENGTH_LONG).show();
+    	startService();
     }
-    public int setupConnection()
+    public void startService()
     {
-    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-    	ChatContext ctx = ChatContext.getChatContext(prefs.getString("account_username", ""), prefs.getString("account_password", ""));
-    	Debug dbg = Debug.getInstance();
+	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
     	
-    	if (!ctx.isInitiated())
-    	{
-    		dbg.out("Fehler beim initiieren:" + ctx.getLastErrorMessage());
-    		return -1;
-    	}
-    	if (!ctx.connect())
-    	{
-    		dbg.out("Fehler beim verbinden:" + ctx.getLastErrorMessage());
-    		return -2;
-    	}
+    	Intent serviceIntent = new Intent(this, ChatService.class);
+    	serviceIntent.putExtra("username", prefs.getString("account_username", ""));
+    	serviceIntent.putExtra("password", prefs.getString("account_password", ""));
     	
-    	if (mContactFragment.adp != null)
-    	{
+    	bindService(serviceIntent, mConnection,
+				Context.BIND_AUTO_CREATE);
     	
-    		for (int i=0;i<mContactFragment.adp.getCount();i++)
-    		{
-    			Contact ctc = mContactFragment.adp.mContacts.get(i);
-    			Conversation newconv = Conversation.spawnConversation(ctc, ctx);
-    			newconv.setOnUnreadMessagesListener(ctc.unreadListener);
-    		}
-    			
+    }
+    @Override
+    public void onPause()
+    {
+    	super.onPause();
+    	if (mChatService != null)
+    	{
+    		mChatService.setShowNofication(true);
     	}
-    	return 1;
+    }
+    public void onResume()
+    {
+    	super.onResume();
+    	if (mChatService != null)
+    	{
+    		mChatService.setShowNofication(false);
+    	}
     }
 
     

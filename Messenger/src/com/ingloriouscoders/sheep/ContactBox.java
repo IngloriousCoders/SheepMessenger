@@ -2,6 +2,7 @@ package com.ingloriouscoders.sheep;
 
 
 import java.io.FileNotFoundException;
+
 import java.io.IOException;
 
 import android.view.*;
@@ -11,11 +12,14 @@ import android.content.*;
 import android.util.*;
 import android.graphics.PorterDuff.Mode;
 import android.view.InputEvent.*;
+import android.widget.CalendarView.OnDateChangeListener;
 import android.util.Log;
 import android.content.res.Resources;
 import android.net.Uri;	
 import android.content.res.AssetFileDescriptor;
 import java.io.InputStream;
+
+import android.widget.Toast;
 
 import com.ingloriouscoders.chatbackend.Contact;
 import com.ingloriouscoders.chatbackend.OnContactDataChanged;
@@ -37,7 +41,6 @@ public class ContactBox extends View {
 	private boolean state_pressed = false;
 	
 	private int label_max_len = 15;
-	private String contact_label = "Luca";
 	
 	private Context mContext;	
 	
@@ -314,16 +317,9 @@ public class ContactBox extends View {
 	{
 		return mContact;
 	}
-	final private ContactBox thisobj = this;
-	protected OnContactDataChanged mListener = new OnContactDataChanged() {
-		
-		@Override
-		public void dataChanged(Contact _contact) {
-			Log.v("Luca","Unread changed");
-			thisobj.invalidate();
-			
-		}
-	};
+	
+
+	
 	
 }
 	

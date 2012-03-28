@@ -26,6 +26,19 @@
         </activity>
         <activity android:name="SingleChat" android:windowSoftInputMode="adjustResize"></activity>
         <activity android:name=".Preferences"></activity>
+        
+        <service 
+            android:name="ChatService"
+            android:label="@string/service_name"
+            
+            > </service>
+        
+        <receiver android:name="ChatServiceAutoStart" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        
     </application>
 
 </manifest>

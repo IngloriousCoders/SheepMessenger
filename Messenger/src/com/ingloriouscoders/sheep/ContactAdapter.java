@@ -1,6 +1,8 @@
 package com.ingloriouscoders.sheep;
 
 import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.Toast;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,7 +78,7 @@ public class ContactAdapter extends BaseAdapter {
     	final ContactAdapter ca = this;
     	    	
     	cb.setContact(thiscontact);
-    	thiscontact.setOnContactDataChangedListener(cb.mListener);
+    	thiscontact.setOnContactDataChangedListener(mListener);
     	cb.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View view) {
                 Intent myIntent = new Intent(view.getContext(), SingleChat.class);
@@ -95,5 +97,6 @@ public class ContactAdapter extends BaseAdapter {
     	
     	return cb;
     }
-
+    
+    protected OnContactDataChanged mListener;
 }

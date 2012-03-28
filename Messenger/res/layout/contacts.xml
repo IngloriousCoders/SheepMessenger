@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical" 
     >
-    <GridView xmlns:android="http://schemas.android.com/apk/res/android" 
+    <com.ingloriouscoders.sheep.ContactGrid xmlns:android="http://schemas.android.com/apk/res/android" 
 	    android:id="@+id/contactGridView"
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"
@@ -17,7 +17,7 @@
 	    android:gravity="center"
 	    android:fastScrollEnabled="true"
 	    android:smoothScrollbar="true"
-	    android:saveEnabled="true"
+	    android:scrollingCache="true"
 		/>
 
 </LinearLayout>
