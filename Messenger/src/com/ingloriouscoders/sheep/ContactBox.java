@@ -18,6 +18,8 @@ import android.content.res.AssetFileDescriptor;
 import java.io.InputStream;
 
 import com.ingloriouscoders.chatbackend.Contact;
+import com.ingloriouscoders.chatbackend.OnContactDataChanged;
+import com.ingloriouscoders.chatbackend.OnUnreadMessagesListener;
 
 
 public class ContactBox extends View {
@@ -312,7 +314,16 @@ public class ContactBox extends View {
 	{
 		return mContact;
 	}
-
+	final private ContactBox thisobj = this;
+	protected OnContactDataChanged mListener = new OnContactDataChanged() {
+		
+		@Override
+		public void dataChanged(Contact _contact) {
+			Log.v("Luca","Unread changed");
+			thisobj.invalidate();
+			
+		}
+	};
 	
 }
 	

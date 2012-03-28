@@ -31,6 +31,7 @@ import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 
 import com.ingloriouscoders.util.Debug;
+import android.widget.Toast;
 
 public class SheepMessenger extends FragmentActivity {
 	
@@ -97,21 +98,34 @@ public class SheepMessenger extends FragmentActivity {
     }
     public void onClickConnect(MenuItem item)
     {
+    	Debug dbg = Debug.getInstance();
+    	
+    	int code = setupConnection();
+    	
+    	if (code == 1)
+    		Toast.makeText(this,"Verbindung erfolgreich!", Toast.LENGTH_LONG).show();
+    	else if (code == -1)
+    		Toast.makeText(this,"Verbindungsproblem beim initieren", Toast.LENGTH_LONG).show();
+    	else if (code == -2)
+    		Toast.makeText(this,"Verbindungsproblem beim verbinden", Toast.LENGTH_LONG).show();
+    	else 
+    		Toast.makeText(this,"Unbekanntes Verbindungsproblem", Toast.LENGTH_LONG).show();
+    }
+    public int setupConnection()
+    {
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-    	
-    	
     	ChatContext ctx = ChatContext.getChatContext(prefs.getString("account_username", ""), prefs.getString("account_password", ""));
     	Debug dbg = Debug.getInstance();
     	
     	if (!ctx.isInitiated())
     	{
     		dbg.out("Fehler beim initiieren:" + ctx.getLastErrorMessage());
-    		return;
+    		return -1;
     	}
     	if (!ctx.connect())
     	{
     		dbg.out("Fehler beim verbinden:" + ctx.getLastErrorMessage());
-    		return;
+    		return -2;
     	}
     	
     	if (mContactFragment.adp != null)
@@ -125,8 +139,7 @@ public class SheepMessenger extends FragmentActivity {
     		}
     			
     	}
-    	
-    	dbg.out("Everything went good");
+    	return 1;
     }
 
     

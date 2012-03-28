@@ -25,26 +25,13 @@ public class ContactAdapter extends BaseAdapter {
     protected List<Contact> mContacts = new ArrayList<Contact>();
 
     final private ContactAdapter thisclass = this;
-    private OnContactDataChanged dataListener = new OnContactDataChanged() {
-		
-		@Override
-		public void dataChanged(Contact _contact) {
-			Log.v("ContactAdapter","Unread changed. address=" + _contact.getAddress() + " | unread=" + _contact.getUnreadMessages());
-			if (mContacts.contains(_contact))
-			{
-				Log.v("contactadapter","found");
-			}
-			thisclass.notifyDataSetChanged();
-		}
-	};
-    
+       
     public ContactAdapter(Context c) {
         mContext = c;
     }
 
     public void addContact(Contact _contact)
     {
-    	_contact.setOnContactDataChangedListener(dataListener); 
     	mContacts.add(_contact);
     	this.notifyDataSetChanged();
     }
@@ -89,6 +76,7 @@ public class ContactAdapter extends BaseAdapter {
     	final ContactAdapter ca = this;
     	    	
     	cb.setContact(thiscontact);
+    	thiscontact.setOnContactDataChangedListener(cb.mListener);
     	cb.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View view) {
                 Intent myIntent = new Intent(view.getContext(), SingleChat.class);

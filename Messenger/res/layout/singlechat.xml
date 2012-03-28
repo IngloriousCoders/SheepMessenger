@@ -14,12 +14,9 @@
             android:dividerHeight="0px"
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
-            android:columnWidth="260dp"
-            android:gravity="left"
             android:horizontalSpacing="10dp"
             android:stackFromBottom="true" 
-            android:layout_marginBottom="50dp"
-            >
+            android:layout_marginBottom="50dp" >
 
         </ListView>
 

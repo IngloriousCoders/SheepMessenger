@@ -52,7 +52,8 @@ import android.widget.Toast;
 
 public class SingleChat extends FragmentActivity {
     /** Called when the activity is first created. */
-	Conversation mConversation;
+	private Conversation mConversation;
+	private OnNewMessageListener mListener;
 	
 	final static int default_incomingColor = Color.rgb(50,166,166);
 	final static int default_outgoingColor = Color.rgb(109,217,110);
@@ -61,16 +62,12 @@ public class SingleChat extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+        requestWindowFeature(Window.FEATURE_ACTION_BAR);
         
         ActionBar ab = getActionBar();
         ab.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg));
-        
-        
         ab.setDisplayHomeAsUpEnabled(true);
-        
-        
-        
+              
         
         setContentView(R.layout.singlechat);
         
@@ -97,7 +94,7 @@ public class SingleChat extends FragmentActivity {
         
         Contact opposite = new Contact(username,showname,photoURI);
         opposite.setAddress(address);
-               
+                       
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         ChatContext ctx = ChatContext.getChatContext(prefs.getString("account_username", ""), prefs.getString("account_password", ""));
         
@@ -120,9 +117,10 @@ public class SingleChat extends FragmentActivity {
         listview.setAdapter(msga);
  
         mConversation = Conversation.spawnConversation(opposite, ctx);
+        mConversation.resetUnreadCount();
           
         ab.setTitle("Chat mit " + mConversation.getOpposite().getShowname());
-        Toast.makeText(this, "Chatting with " + mConversation.getOpposite().getShowname()  + "|" + mConversation.getOpposite().getAddress(), Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, "Chatting with " + mConversation.getOpposite().getShowname()  + "|" + mConversation.getOpposite().getAddress(), Toast.LENGTH_LONG).show();
         
         List<Message> history = mConversation.getHistory(0);
         dbg.out("Historysize=" + history.size());        
@@ -139,18 +137,21 @@ public class SingleChat extends FragmentActivity {
         	}
         	msga.addMessage(history.get(i));
         }
-                
-        mConversation.setOnNewMessageListener(new OnNewMessageListener() {
+         
+        mListener = new OnNewMessageListener() {
 			
 			@Override
 			public void onNewMessage(Conversation _conversation, Message _newmessage) {
 				_newmessage.setColor(default_incomingColor);
 				msga.addMessage(_newmessage);	
-				mConversation.resetUnreadCount();
-				listview.smoothScrollToPosition(msga.getCount()-1);
+				listview.smoothScrollToPosition(msga.getCount());
 				Log.v("SingleChat","Message recieved");
+				_conversation.resetUnreadCount();
 			}
-		});
+		};
+		mConversation.setOnNewMessageListener(mListener);
+        
+        
         final Activity ownact = this;
 
         
@@ -169,7 +170,8 @@ public class SingleChat extends FragmentActivity {
 				EditText sendfield = (EditText)myact.findViewById(R.id.msg_field);
 				Editable content = sendfield.getText();
 				sendfield.setText("");
-				if (content.toString() == "")
+				if (content.toString().equals("") )
+				
 				{
 					return;
 				}				
@@ -178,7 +180,7 @@ public class SingleChat extends FragmentActivity {
 				msg.setMessageText(content.toString());
 				msg.send();	
 				msga.addMessage(msg);
-				listview.smoothScrollToPosition(msga.getCount()-1);
+				listview.smoothScrollToPosition(msga.getCount());
 			}
 		});
         EditText sendfield = (EditText)findViewById(R.id.msg_field);
@@ -223,7 +225,10 @@ public class SingleChat extends FragmentActivity {
     public void onPause() {
         super.onPause();
         
+        mConversation.setOnNewMessageListener(null);
+                
         overridePendingTransition(R.anim.enterfromleft, R.anim.leavetoright);
+        
    }
     @Override
    public boolean onOptionsItemSelected(MenuItem item)

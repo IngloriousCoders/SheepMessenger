@@ -82,10 +82,10 @@ public class Contact {
 		
 		@Override
 		public void onNewMessage(Contact _contact, int value) {
-			thisclass.unread_messages = value;
+			_contact.unread_messages = value;
 			if (thisclass.mListener != null)
 			{
-				thisclass.mListener.dataChanged(thisclass);
+				_contact.mListener.dataChanged(thisclass);
 			}
 			
 		}

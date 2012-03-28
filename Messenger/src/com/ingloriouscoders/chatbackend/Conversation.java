@@ -38,7 +38,8 @@ public class Conversation {
 	{
 		mContext = _ctx;
 		mOpposite = _opposite;
-		mContext.etablishConversation(this);		
+		mContext.etablishConversation(this);	
+		this.setOnUnreadMessagesListener(mOpposite.unreadListener);
 	}
 	public Contact getOpposite()
 	{
@@ -133,6 +134,12 @@ public class Conversation {
 	public void resetUnreadCount()
 	{
 		this.unreadCount = 0;
+		if (this.mUnreadListener != null)
+		{
+			mUnreadListener.onNewMessage(this.getOpposite(), this.unreadCount);
+		}
+		Log.v("luca","reset count");
+		
 	}
 	public void setOnUnreadMessagesListener(OnUnreadMessagesListener _listener)
 	{
