@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 import com.ingloriouscoders.chatbackend.Message;
+import com.ingloriouscoders.chatbackend.OnContactDataChanged;
+import com.ingloriouscoders.chatbackend.OnNewMessageListener;
 
 import android.widget.GridView;
 import android.os.Parcelable;
@@ -24,7 +26,10 @@ import android.util.Log;
 
 public class MessageAdapter extends BaseAdapter {
     private Context mContext;
-    private List<Message> mMessageBubble = new ArrayList<Message>();
+    public List<Message> mMessageBubble = new ArrayList<Message>();
+    protected OnNewMessageListener msgListener;
+    int debug_Reads = 0;
+    public MessageView lview; public Message msg;
 
     public MessageAdapter(Context c) {
         mContext = c;
@@ -36,11 +41,20 @@ public class MessageAdapter extends BaseAdapter {
     	this.notifyDataSetChanged();
     }
     
-    public void addScrolledMessage(Message _msg, ListView lview)
+    public void addScrolledMessage(Message _msg, MessageView _lview)
     {
     	mMessageBubble.add(_msg);
-		lview.smoothScrollBy(1000, MessageBubble.calculateHeight(_msg.getMessageText()));
-    	this.notifyDataSetChanged();
+		this.lview = _lview;
+		this.msg = _msg;
+		
+
+		    	lview.smoothScrollBy(lview.getCount() * 500, lview.getCount() * 1000);
+		    	lview.getMessageAdapter().notifyDataSetChanged();
+		    	lview.updateGraphics(msg);
+
+
+		
+		Log.v("Custom","Debug Marker ASFASE");
     }
     
     public void removeMessage(Message _msg)
@@ -71,6 +85,7 @@ public class MessageAdapter extends BaseAdapter {
         
     	final MessageBubble mb;
     	final Message thismessage = mMessageBubble.get(position);
+    	thismessage.setOnNewMessageListener(msgListener);
 
     	if (convertView == null)
     	{
@@ -79,16 +94,17 @@ public class MessageAdapter extends BaseAdapter {
         	mb.setMessage(thismessage.getSender(), thismessage.getMessageText());
         	mb.setGraphics(thismessage.getIncoming(), thismessage.getColor());
         	mb.setLayoutParams(new GridView.LayoutParams(LayoutParams.MATCH_PARENT,mb.calculateHeight()+mb.bubbleoffset));
-        	
     	}
     	else
     	{
     		mb = (MessageBubble)convertView;
     		mb.setMessage(thismessage.getSender(), thismessage.getMessageText());
     		mb.setGraphics(thismessage.getIncoming(), thismessage.getColor());
-    		mb.setLayoutParams(new GridView.LayoutParams(LayoutParams.MATCH_PARENT,mb.calculateHeight()+mb.bubbleoffset));
-    		
+    		mb.setLayoutParams(new GridView.LayoutParams(LayoutParams.MATCH_PARENT,mb.calculateHeight()+mb.bubbleoffset));	
     	}
+    	
+    	//DEBUG:
+    	mb.setReads(7, 0);
     	
     	final MessageAdapter ma = this;
     	
@@ -97,15 +113,19 @@ public class MessageAdapter extends BaseAdapter {
 
                 return false;
          	}
-    	});
+    	});*/
     	
     	mb.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View view) {
-        		mb.clicked = !mb.clicked;
+        		//DEBUG:
+        		if(debug_Reads <= 7) {
+        			debug_Reads++;
+        			mb.setReads(7, debug_Reads);
+        		}
          	}
     	});
     	
-    	mb.setOnTouchListener(new View.OnTouchListener() {
+    	/*mb.setOnTouchListener(new View.OnTouchListener() {
     	    public boolean onTouch(View v, MotionEvent event) {
     	        if(event.getAction() == MotionEvent.ACTION_DOWN) {
     	            mb.clicked = true;

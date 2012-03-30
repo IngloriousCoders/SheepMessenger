@@ -9,6 +9,8 @@ public class Message {
 	private String sender;
 	private boolean incoming;
 	private int color;
+	public boolean placeholder;
+	private OnNewMessageListener mListener;
 	
 	protected Conversation mConversation;
 	
@@ -17,11 +19,20 @@ public class Message {
 		this.sender  = _sender;
 		this.incoming = _incoming;
 		this.color = _color;
+		this.placeholder = false;
 	}
 	
 	public Message() {
-		this.msgtext = "null";
-		this.sender  = "null";
+		this.msgtext = "";
+		this.sender  = "";
+		this.incoming = true;
+		this.color = Color.BLACK;
+		this.placeholder = true;
+	}
+	
+	public boolean isPlaceholder()
+	{
+		return this.placeholder;
 	}
 	
 
@@ -77,6 +88,16 @@ public class Message {
 		return new Message("null","null name",false,0);
 	}
 	
+	public void setOnNewMessageListener(OnNewMessageListener _listener)
+	{
+		this.mListener = _listener;
+	}
 	
-	
+	public OnNewMessageListener unreadListener = new OnNewMessageListener() {
+		
+		@Override
+		public void onNewMessage(Conversation _conv, Message _msg) {
+			Log.v("Custom","New unread message");
+		}
+	};
 }

@@ -7,6 +7,7 @@ import com.ingloriouscoders.chatbackend.ChatContext;
 import com.ingloriouscoders.chatbackend.Contact;
 import com.ingloriouscoders.chatbackend.Conversation;
 import com.ingloriouscoders.chatbackend.Message;
+import com.ingloriouscoders.chatbackend.OnContactDataChanged;
 import com.ingloriouscoders.chatbackend.OnNewMessageListener;
 
 import android.support.v4.app.FragmentActivity;
@@ -110,16 +111,17 @@ public class SingleChat extends FragmentActivity {
     		return;
     	}
         
-        final ListView listview = (ListView) findViewById(R.id.messageslistview);
-        
+        final MessageView listview = (MessageView) findViewById(R.id.messageslistview);
+        listview.smoothScrollBy(listview.getCount() * 500, 1000);
         listview.setDivider(null);
         
-        final MessageAdapter msga = new MessageAdapter(this);
-        listview.setAdapter(msga);
+        final MessageAdapter msga = listview.getMessageAdapter();
+        //final MessageAdapter msga = new MessageAdapter(this);
+        //listview.setAdapter(msga);
  
         mConversation = Conversation.spawnConversation(opposite, ctx);
         mConversation.resetUnreadCount();
-          
+        
         ab.setTitle("Chat mit " + mConversation.getOpposite().getShowname());
         //Toast.makeText(this, "Chatting with " + mConversation.getOpposite().getShowname()  + "|" + mConversation.getOpposite().getAddress(), Toast.LENGTH_LONG).show();
         
@@ -138,14 +140,17 @@ public class SingleChat extends FragmentActivity {
         	}
         	msga.addMessage(history.get(i));
         }
+        
+        if(history.size()==0)
+        	msga.addMessage(new Message());
          
         mListener = new OnNewMessageListener() {
 			
 			@Override
 			public void onNewMessage(Conversation _conversation, Message _newmessage) {
+				Log.v("SingleChat","Message recieved");
 				_newmessage.setColor(default_incomingColor);
 				msga.addScrolledMessage(_newmessage, listview);
-				Log.v("SingleChat","Message recieved");
 				_conversation.resetUnreadCount();
 			}
 		};
@@ -174,13 +179,12 @@ public class SingleChat extends FragmentActivity {
 				
 				{
 					return;
-				}				
+				}
 				Message msg = myconv.prepareMessage();
 				msg.setColor(default_outgoingColor);
 				msg.setMessageText(content.toString());
-				msg.send();	
-				msga.addMessage(msg);
-				listview.smoothScrollToPosition(msga.getCount());
+				msg.send();
+				msga.addScrolledMessage(msg, listview);
 			}
 		});
         EditText sendfield = (EditText)findViewById(R.id.msg_field);
@@ -230,7 +234,14 @@ public class SingleChat extends FragmentActivity {
         overridePendingTransition(R.anim.enterfromleft, R.anim.leavetoright);
         
    }
-   
+    
+    @Override
+    public void onResume() {
+    	super.onResume();
+    	
+    	mConversation.setOnNewMessageListener(mListener);
+    }
+    
    @Override
    public void onStop() {
 	   super.onStop();
