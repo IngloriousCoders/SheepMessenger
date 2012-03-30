@@ -73,8 +73,6 @@ public class MessageBubble extends View {
 				textPaint.setTextSize(20);
 				textPaint.setColor(Color.BLACK);
 				
-				canvas.drawText("" + placeholder, 20, 20, textPaint);
-				
 				//Algorithmus fuer die Zeilenumbrueche. Die einzelnen Textzeilen werden in der List "lines" gespeichert.
 				lines  = new ArrayList<String>();
 				int destinationWidth = bubblewidth - paddingleft - (paddingright * 5);
