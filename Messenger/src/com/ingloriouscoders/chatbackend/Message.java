@@ -1,38 +1,31 @@
 package com.ingloriouscoders.chatbackend;
 
+import android.R.integer;
 import android.graphics.Color;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.v4.os.ParcelableCompat;
 import android.util.Log;
 
-public class Message {
+
+public class Message implements Parcelable{
 	
 	private String msgtext;
 	private String sender;
 	private boolean incoming;
 	private int color;
-	public boolean placeholder;
-	private OnNewMessageListener mListener;
 	
-	protected Conversation mConversation;
 	
 	public Message(String _msgtext, String _sender, boolean _incoming, int _color) {
 		this.msgtext = _msgtext;
 		this.sender  = _sender;
 		this.incoming = _incoming;
 		this.color = _color;
-		this.placeholder = false;
 	}
 	
 	public Message() {
-		this.msgtext = "";
-		this.sender  = "";
-		this.incoming = true;
-		this.color = Color.BLACK;
-		this.placeholder = true;
-	}
-	
-	public boolean isPlaceholder()
-	{
-		return this.placeholder;
+		this.msgtext = "null";
+		this.sender  = "null";
 	}
 	
 
@@ -69,35 +62,43 @@ public class Message {
 	{
 		this.color = _color;
 	}
-	public void setConversation(Conversation _conv)
-	{
-		this.mConversation = _conv;
-	}
-	
-	public boolean send()
-	{
-		if (mConversation == null)
-		{
-			return false;
-		}
-		return mConversation.sendMessage(this);
-	}
 	
 	public static Message getPlaceholder()
 	{
 		return new Message("null","null name",false,0);
 	}
+	//Parcelable Zeugs
 	
-	public void setOnNewMessageListener(OnNewMessageListener _listener)
-	{
-		this.mListener = _listener;
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+	   dest.writeString(msgtext);
+	   dest.writeString(sender);
+	   dest.writeInt(incoming ? 0 : 1); // Weil es kein writeBoolean() gibet
+	   dest.writeInt(color);
+	}	
+	public static final Parcelable.Creator<Message> CREATOR
+	    = new Parcelable.Creator<Message>() {
+	public Message createFromParcel(Parcel in) {
+	    return new Message(in);
 	}
 	
-	public OnNewMessageListener unreadListener = new OnNewMessageListener() {
-		
-		@Override
-		public void onNewMessage(Conversation _conv, Message _msg) {
-			Log.v("Custom","New unread message");
-		}
+	public Message[] newArray(int size) {
+	    return new Message[size];
+	}
 	};
+	
+	private Message(Parcel in) {
+		msgtext = in.readString();
+		sender = in.readString();
+		incoming = in.readInt() == 0;
+		color = in.readInt();
+	}
+	//Parcelable Zeugs ENDE
+	
+	
 }

@@ -27,11 +27,17 @@
         <activity android:name="SingleChat" android:windowSoftInputMode="adjustResize"></activity>
         <activity android:name=".Preferences"></activity>
         
-        <service 
+      <service 
             android:name="ChatService"
             android:label="@string/service_name"
-            
-            > </service>
+            android:process=":sheepservice"> 
+      
+      <intent-filter>
+        <action
+          android:name="com.mindtherobot.samples.tweetservice.TweetCollectorService" />
+      </intent-filter>     
+      
+       </service>
         
         <receiver android:name="ChatServiceAutoStart" >
             <intent-filter>

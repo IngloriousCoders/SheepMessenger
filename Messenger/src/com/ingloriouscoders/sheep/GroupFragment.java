@@ -12,6 +12,9 @@ import android.widget.GridView;
 public class GroupFragment extends Fragment {
 	
 	private View mContentView;
+	
+	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -23,14 +26,14 @@ public class GroupFragment extends Fragment {
             Bundle savedInstanceState) {
 		mContentView = inflater.inflate(R.layout.groups, null);
 		
-		GridView gv = (GridView)mContentView.findViewById(R.id.groupGridView);
+		/*GridView gv = (GridView)mContentView.findViewById(R.id.groupGridView);
 		ContactAdapter adp = new ContactAdapter(getActivity());
 		gv.setAdapter(adp);
 		for(int i=0;i<3;i++)
 		{
-			Contact contact = new Contact("user","Gruppe" + i);
+			ContactStated contact = new ContactStated(new Contact("user","Gruppe" + i);
 			adp.addContact(contact);
-		}
+		}*/
 		return mContentView;
 
     }

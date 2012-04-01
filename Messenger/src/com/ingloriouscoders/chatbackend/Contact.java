@@ -1,16 +1,18 @@
 package com.ingloriouscoders.chatbackend;
 
+
 import android.util.Log;
+import android.location.Address;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 
-public class Contact {
+public class Contact  implements Parcelable{
 	
 	private String username;
 	private String showname;
 	private String mAddress;
 	private String photoURI = "";
-	private int unread_messages = 0;
-	private OnContactDataChanged mListener = null;
 	
 	
 	public Contact(String _username)
@@ -35,6 +37,17 @@ public class Contact {
 		}
 		
 	}
+	public Contact(String _username,String _showname,String photo_uri,String _address)
+	{
+		this.username = _username;
+		this.showname = _showname;
+		if (photo_uri != null)
+		{
+			this.photoURI = photo_uri;
+		}
+		mAddress = _address;
+		
+	}
 	public void setShowName(String _showname)
 	{
 		this.showname = _showname;
@@ -47,14 +60,7 @@ public class Contact {
 	{
 		return showname;
 	}
-	public void setUnreadMessages(int value)
-	{
-		unread_messages = value; 
-	}
-	public int getUnreadMessages()
-	{
-		return unread_messages;
-	}
+
 	public String getPhotoURI()
 	{
 		return this.photoURI;
@@ -72,23 +78,39 @@ public class Contact {
 	{
 		return new Contact("null","null name");
 	}
-	public void setOnContactDataChangedListener(OnContactDataChanged _listener)
-	{
-		this.mListener = _listener;
+	
+	//Parcelable Zeugs
+	
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+	   dest.writeString(username);
+	   dest.writeString(showname);
+	   dest.writeString(mAddress);
+
+
+		
+	}	
+	public static final Parcelable.Creator<Contact> CREATOR
+	    = new Parcelable.Creator<Contact>() {
+	public Contact createFromParcel(Parcel in) {
+	    return new Contact(in);
 	}
 	
-	public final Contact thisclass = this;
-	public OnUnreadMessagesListener unreadListener = new OnUnreadMessagesListener() {
-		
-		@Override
-		public void onNewMessage(Contact _contact, int value) {
-			_contact.unread_messages = value;
-			if (thisclass.mListener != null)
-			{
-				_contact.mListener.dataChanged(thisclass);
-			}
-			
-		}
+	public Contact[] newArray(int size) {
+	    return new Contact[size];
+	}
 	};
 	
+	protected Contact(Parcel in) {
+		username = in.readString();
+		showname = in.readString();
+		mAddress = in.readString();
+
+	}
+	//Parcelable Zeugs ENDE
 }

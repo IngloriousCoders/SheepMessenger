@@ -7,12 +7,12 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.text.style.ClickableSpan;
+
 import android.content.Intent;
-import android.content.pm.FeatureInfo;
-import android.graphics.drawable.Drawable;
+
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 
@@ -36,6 +36,9 @@ import java.util.List;
 import com.ingloriouscoders.chatbackend.ChatContext;
 import com.ingloriouscoders.chatbackend.Contact;
 import com.ingloriouscoders.chatbackend.Conversation;
+import com.ingloriouscoders.chatbackend.Message;
+import com.ingloriouscoders.chatbackend.ServiceChatContext;
+import com.ingloriouscoders.chatbackend.ServiceConversation;
 import com.ingloriouscoders.util.Debug;
 
 import android.app.ActionBar;
@@ -45,18 +48,24 @@ import com.ingloriouscoders.util.Debug;
 import android.widget.Toast;
 import android.util.Log;
 
+
+
 public class SheepMessenger extends FragmentActivity {
 	
     /** Called when the activity is first created. */
-	private ContactFragment mContactFragment = new ContactFragment();
-	private GroupFragment mGroupFragment = new GroupFragment();
-	private ChatService mChatService;
-	private ChatContext mChatContext;
+	private ContactFragment mContactFragment;
+	private GroupFragment mGroupFragment;
+	protected ChatService mChatService;
+	protected ServiceChatContext mServiceChatContext;
+	private boolean connected = false;
+	
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+        mContactFragment =  new ContactFragment();
+        mGroupFragment = new GroupFragment();
         
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         
@@ -69,9 +78,7 @@ public class SheepMessenger extends FragmentActivity {
         ab.setDisplayShowTitleEnabled(false);
         
         setContentView(R.layout.main);
-        
-        
-        
+                
         StartAdapter viewpager_adp = new StartAdapter(getSupportFragmentManager(),this);
         viewpager_adp.addPage(mContactFragment);
         viewpager_adp.addPage(mGroupFragment);
@@ -96,39 +103,30 @@ public class SheepMessenger extends FragmentActivity {
         StartPageChange vp_page_listener = new StartPageChange(getActionBar(), start_tabs);
         
         vp.setOnPageChangeListener(vp_page_listener);
-        startService();
-        if (mChatService != null)
-    	{
-    		mChatService.setShowNofication(false);
-    	}
+        startChatService();
 
    }
     private ServiceConnection mConnection = new ServiceConnection() {
 
-		public void onServiceConnected(ComponentName className, IBinder binder) {
-			mChatService = ((ChatService.LocalBinder) binder).getService();
-			
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SheepMessenger.this);
-	    	mChatContext = mChatService.getChatContext(prefs.getString("account_username", ""), prefs.getString("account_password", ""));
-			
-	    	if (mContactFragment.adp != null)
-	    	{
+		public void onServiceConnected(ComponentName className, IBinder service) {
+		    mServiceChatContext = ServiceChatContext.Stub.asInterface(service);
+		    if (mServiceChatContext == null)
+		    {
+		    	Log.v("","ChatContext = 0");
+		    	return;
+		    }
+
+		    mContactFragment.fillGrid(mServiceChatContext,SheepMessenger.this);
+		    SheepMessenger.this.connected = true;
 	    	
-	    		for (int i=0;i<mContactFragment.adp.getCount();i++)
-	    		{
-	    			Contact ctc = mContactFragment.adp.mContacts.get(i);
-	    			Conversation newconv = Conversation.spawnConversation(ctc, mChatContext);
-	    			newconv.setOnUnreadMessagesListener(ctc.unreadListener);
-	    		}
-	    			
-	    	}
-	    	
-			Toast.makeText(SheepMessenger.this, "Connected",
+			Toast.makeText(SheepMessenger.this, "Verbunden",
 					Toast.LENGTH_SHORT).show();
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
 			mChatService = null;
+			mServiceChatContext = null;
+			SheepMessenger.this.connected = false;
 		}
 	};
     
@@ -146,36 +144,33 @@ public class SheepMessenger extends FragmentActivity {
     }
     public void onClickConnect(MenuItem item)
     {
-    	startService();
+    	startChatService();
     }
-    public void startService()
+    public void startChatService()
     {
-	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
     	
     	Intent serviceIntent = new Intent(this, ChatService.class);
-    	serviceIntent.putExtra("username", prefs.getString("account_username", ""));
-    	serviceIntent.putExtra("password", prefs.getString("account_password", ""));
+    	this.startService(serviceIntent);
     	
-    	bindService(serviceIntent, mConnection,
-				Context.BIND_AUTO_CREATE);
+    	
+    	bindService(serviceIntent, mConnection,0);
     	
     }
     @Override
     public void onPause()
     {
     	super.onPause();
-    	if (mChatService != null)
-    	{
-    		mChatService.setShowNofication(true);
-    	}
     }
     public void onResume()
     {
     	super.onResume();
-    	if (mChatService != null)
-    	{
-    		mChatService.setShowNofication(false);
-    	}
+    	startChatService();
+    }
+    public void onDestroy()
+    {
+    	super.onDestroy();
+    	unbindService(mConnection);
     }
 
     

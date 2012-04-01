@@ -1,7 +1,7 @@
 package com.ingloriouscoders.chatbackend;
 
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
@@ -32,35 +32,15 @@ public class ChatContext {
 	
 	private XMPPConnection mConnection;
 	
-	private static List<Conversation> activeConversations = new Vector<Conversation>(); 
+	private static List<Conversation> activeConversations = new ArrayList<Conversation>(); 
 	
 	public final static String default_server = "talk.google.com";
 	public final static int default_port = 5222 ;
 	public final static String default_resource = "SHEEP_MOBILE1";
+		
+	private List<OnNewMessageListener> mListeners = new ArrayList<OnNewMessageListener>();
 	
-	private static ChatContext mInstance;
-	
-	protected OnNewMessageListener notificationNewMessage;
-	
-	public static ChatContext getChatContext(String _username,String _password)
-	{
-		if (mInstance == null)
-		{
-			Log.v("chatbackend","Context newly created");
-			mInstance = new ChatContext(_username,_password);
-			return mInstance;
-		}
-		if (mInstance.getUsername() != _username)
-		{
-			Log.v("chatbackend","Context is there but with another user");
-			mInstance.disconnect();
-			mInstance = new ChatContext(_username,_password);
-			return mInstance;
-		}
-		Log.v("chatbackend","Context got from Ram");
-		return mInstance;		
-	}
-	private ChatContext(String username,String password)
+	public ChatContext(String username,String password)
 	{
 		mUsername = username;
 		mUserShowname = username;
@@ -142,11 +122,15 @@ public class ChatContext {
 			        }
 			    });
 		
+		
+		return true;
+	}
+	public void setStatus(String status)
+	{
 		Presence presence = new Presence(Presence.Type.available);
-		presence.setStatus("Online mit SheepMessenger");
+		presence.setStatus(status);
 		// Send the packet (assume we have a Connection instance called "con").
 		mConnection.sendPacket(presence);
-		return true;
 	}
 	public boolean setAccount(String username,String password)
 	{
@@ -193,7 +177,6 @@ public class ChatContext {
 		SASLAuthentication.unsupportSASLMechanism("PLAIN");
 		mConnection = new XMPPConnection(config);
 		config.setSASLAuthenticationEnabled(true); 
-		XMPPConnection.DEBUG_ENABLED = true;		
 		initiated = true;
 		return initiated;
 	}
@@ -225,9 +208,26 @@ public class ChatContext {
 		activeConversations.add(_conv);
 		return true;
 	}
-	public void setOnNewMessageListener(OnNewMessageListener _listener)
+	public void addOnNewMessageListener(OnNewMessageListener _listener)
 	{
-		notificationNewMessage = _listener;
+		mListeners.add(_listener);
 	}
+	public void removeOnNewMessageListener(OnNewMessageListener _listener)
+	{
+		mListeners.remove(_listener);
+	}
+	
+	protected OnNewMessageListener childNewMessageListener = new OnNewMessageListener() {
+		
+		@Override
+		public void onNewMessage(Conversation _conversation, Message _newmessage) {
+			for ( OnNewMessageListener currentListener : ChatContext.this.mListeners )
+			{
+				currentListener.onNewMessage(_conversation,_newmessage);
+			}
+			
+		}
+	};
+	
 	
 }

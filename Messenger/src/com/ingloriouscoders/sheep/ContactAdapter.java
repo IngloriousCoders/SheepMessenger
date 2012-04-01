@@ -1,5 +1,6 @@
 package com.ingloriouscoders.sheep;
 
+
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.Toast;
@@ -11,7 +12,6 @@ import java.util.List;
 import java.util.ArrayList;
 
 import com.ingloriouscoders.chatbackend.Contact;
-import com.ingloriouscoders.chatbackend.OnContactDataChanged;
 
 import android.widget.GridView;
 import android.os.Parcelable;
@@ -24,7 +24,7 @@ import android.util.Log;
 
 public class ContactAdapter extends BaseAdapter {
     private Context mContext;
-    protected List<Contact> mContacts = new ArrayList<Contact>();
+    protected List<ContactStated> mContacts = new ArrayList<ContactStated>();
 
     final private ContactAdapter thisclass = this;
        
@@ -32,7 +32,7 @@ public class ContactAdapter extends BaseAdapter {
         mContext = c;
     }
 
-    public void addContact(Contact _contact)
+    public void addContact(ContactStated _contact)
     {
     	mContacts.add(_contact);
     	this.notifyDataSetChanged();
@@ -74,20 +74,17 @@ public class ContactAdapter extends BaseAdapter {
     	{
     		cb = (ContactBox)convertView;
     	}
-    	final Contact thiscontact = mContacts.get(position);
+    	final ContactStated thiscontact = mContacts.get(position);
     	final ContactAdapter ca = this;
     	    	
     	cb.setContact(thiscontact);
-    	thiscontact.setOnContactDataChangedListener(mListener);
+    	thiscontact.addOnContactStatedDataChangedListener(mListener);
     	cb.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View view) {
                 Intent myIntent = new Intent(view.getContext(), SingleChat.class);
                 
                 myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                myIntent.putExtra("address", ((ContactBox)view).getContact().getAddress());
-                myIntent.putExtra("showname", ((ContactBox)view).getContact().getShowname());
-                myIntent.putExtra("username", ((ContactBox)view).getContact().getUsername());
-                myIntent.putExtra("photoURI", ((ContactBox)view).getContact().getPhotoURI());
+                myIntent.putExtra("contact",thiscontact);
                 ((Activity)mContext).startActivityForResult(myIntent, 0);
                 ((Activity)mContext).overridePendingTransition(R.anim.enterfromright, R.anim.leavetoleft);
                
@@ -98,5 +95,5 @@ public class ContactAdapter extends BaseAdapter {
     	return cb;
     }
     
-    protected OnContactDataChanged mListener;
+    protected OnContactStatedDataChanged mListener;
 }

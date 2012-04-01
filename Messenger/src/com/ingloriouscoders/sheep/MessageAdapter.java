@@ -85,7 +85,7 @@ public class MessageAdapter extends BaseAdapter {
         
     	final MessageBubble mb;
     	final Message thismessage = mMessageBubble.get(position);
-    	thismessage.setOnNewMessageListener(msgListener);
+    	//thismessage.setOnNewMessageListener(msgListener);
 
     	if (convertView == null)
     	{

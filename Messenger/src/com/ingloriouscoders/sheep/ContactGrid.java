@@ -1,12 +1,12 @@
 package com.ingloriouscoders.sheep;
 
 import com.ingloriouscoders.chatbackend.Contact;
-import com.ingloriouscoders.chatbackend.OnContactDataChanged;
 
 import android.util.AttributeSet;
 import android.widget.GridView;
 import android.content.Context;
 import android.widget.ListAdapter;
+import android.util.Log;
 
 public class ContactGrid extends GridView {
 	
@@ -35,10 +35,12 @@ public class ContactGrid extends GridView {
 	}
 	
 	private final ContactGrid thisobj = this;
-	public OnContactDataChanged mListener = new OnContactDataChanged() {
+	public OnContactStatedDataChanged mListener = new OnContactStatedDataChanged() {
 		
 		@Override
-		public void dataChanged(Contact _contact) {						
+		public void dataChanged(ContactStated _contact) {						
+			Log.v("ContactGrid","Redraw called, unread=" + _contact.getUnreadMessages());
+			
 			if (thisobj.getAdapter() != null)
 			{
 				ContactAdapter adp = (ContactAdapter)thisobj.getAdapter();

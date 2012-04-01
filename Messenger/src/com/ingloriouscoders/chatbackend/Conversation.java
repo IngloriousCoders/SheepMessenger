@@ -6,11 +6,16 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.XMPPError;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
+import java.util.List;
+import java.util.ArrayList;
 
-public class Conversation {
+
+public class Conversation{
 	
-	private OnNewMessageListener mListener = null;
+	private List<OnNewMessageListener> newMessageListeners = new ArrayList<OnNewMessageListener>();
 	private OnUnreadMessagesListener mUnreadListener = null;
 	
 	private ChatContext mContext;
@@ -39,7 +44,7 @@ public class Conversation {
 		mContext = _ctx;
 		mOpposite = _opposite;
 		mContext.etablishConversation(this);	
-		this.setOnUnreadMessagesListener(mOpposite.unreadListener);
+		//this.setOnUnreadMessagesListener(mOpposite.unreadListener);
 	}
 	public Contact getOpposite()
 	{
@@ -50,10 +55,7 @@ public class Conversation {
 		this.unreadCount = 0;
 		return history;
 	}
-	public void setOnNewMessageListener(OnNewMessageListener _listener)
-	{
-		this.mListener = _listener;
-	}
+	
 	public ChatContext getContext()
 	{
 		return mContext;
@@ -64,7 +66,6 @@ public class Conversation {
 		newmsg.setSender(mContext.getUserShowname());
 		newmsg.setIncoming(false);
 
-		newmsg.setConversation(this);
 		return newmsg;
 	}	
 	private void addMessage(Message _msg)
@@ -72,13 +73,8 @@ public class Conversation {
 		history.add(_msg);
 		Log.v("chatbackend","added Message: Size=" + history.size());
 	}
-	protected boolean sendMessage(Message _msg)
+	public boolean sendMessage(Message _msg)
 	{
-		if (_msg.mConversation != this)
-		{
-			Log.v("chatbackend","Message is no child of me");
-			return false;
-		}
 		if (mChat == null)
 		{
 			Log.v("chatbackend","Chat is null");
@@ -97,7 +93,7 @@ public class Conversation {
 		{
 			this.addMessage(_msg);
 		}
-		
+		Log.v("ChatBackend","Nachricht: " + _msg.getMessageText() + " wurde versendet.");
 		return true;
 	}
 	
@@ -118,24 +114,15 @@ public class Conversation {
 			}
 			
 			thisclass.addMessage(recieved_msg);
+			
 			unreadCount++;
 			
-			if (thisclass.mUnreadListener != null)
-			{
-				mUnreadListener.onNewMessage(thisclass.getOpposite(), thisclass.unreadCount);
-			}
-			if (Conversation.this.getContext().notificationNewMessage != null)
-			{
-				Conversation.this.getContext().notificationNewMessage.onNewMessage(thisclass,recieved_msg);
-			}
-			if (thisclass.mListener != null)
+			for ( OnNewMessageListener mListener : Conversation.this.newMessageListeners )
 			{
 				mListener.onNewMessage(thisclass,recieved_msg );
 			}
-		
 			
-
-
+			Conversation.this.getContext().childNewMessageListener.onNewMessage(Conversation.this,recieved_msg);
 		}
 	};
 	public void resetUnreadCount()
@@ -148,8 +135,14 @@ public class Conversation {
 		Log.v("luca","reset count");
 		
 	}
-	public void setOnUnreadMessagesListener(OnUnreadMessagesListener _listener)
+	
+	public void addOnNewMessageListener(OnNewMessageListener _listener)
 	{
-		this.mUnreadListener = _listener;
+		this.newMessageListeners.add(_listener);
 	}
+	public void removeOnNewMessageListener(OnNewMessageListener _listener)
+	{
+		this.newMessageListeners.remove(_listener);
+	}
+
 }

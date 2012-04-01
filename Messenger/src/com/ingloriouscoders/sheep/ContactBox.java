@@ -22,7 +22,6 @@ import java.io.InputStream;
 import android.widget.Toast;
 
 import com.ingloriouscoders.chatbackend.Contact;
-import com.ingloriouscoders.chatbackend.OnContactDataChanged;
 import com.ingloriouscoders.chatbackend.OnUnreadMessagesListener;
 
 
@@ -44,18 +43,17 @@ public class ContactBox extends View {
 	
 	private Context mContext;	
 	
-	private Contact mContact;
+	private ContactStated mContact;
 	
 	public ContactBox(Context context){
 
 		super(context);
 		mContext = context;
-		mContact = Contact.getPlaceholder();
 		initializeBitmap();
 		
 
 	}
-	public ContactBox(Context context,Contact _contact){
+	public ContactBox(Context context,ContactStated _contact){
 
 		super(context);
 
@@ -308,7 +306,7 @@ public class ContactBox extends View {
 		
 		}
 	}
-	public void setContact(Contact _contact)
+	public void setContact(ContactStated _contact)
 	{
 		this.mContact = _contact;
 		initializeBitmap();

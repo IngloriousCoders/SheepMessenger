@@ -9,6 +9,9 @@ import com.ingloriouscoders.chatbackend.Conversation;
 import com.ingloriouscoders.chatbackend.Message;
 import com.ingloriouscoders.chatbackend.OnContactDataChanged;
 import com.ingloriouscoders.chatbackend.OnNewMessageListener;
+import com.ingloriouscoders.chatbackend.OnServiceNewMessageListener;
+import com.ingloriouscoders.chatbackend.ServiceChatContext;
+import com.ingloriouscoders.chatbackend.ServiceConversation;
 
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -18,6 +21,8 @@ import android.app.ActionBar.Tab;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.util.Log;
@@ -28,7 +33,9 @@ import android.view.Window;
 import android.widget.ListView	;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.FeatureInfo;
 import android.os.Bundle;
@@ -53,8 +60,13 @@ import android.widget.Toast;
 
 public class SingleChat extends FragmentActivity {
     /** Called when the activity is first created. */
-	private Conversation mConversation;
-	private OnNewMessageListener mListener;
+	private ServiceConversation mConversation;
+	private OnServiceNewMessageListener mListener;
+	
+	protected ChatService mChatService;
+	protected ServiceChatContext mServiceChatContext;
+	
+	private ContactStated mOpposite;
 	
 	final static int default_incomingColor = Color.rgb(50,166,166);
 	final static int default_outgoingColor = Color.rgb(109,217,110);
@@ -69,48 +81,20 @@ public class SingleChat extends FragmentActivity {
         ActionBar ab = getActionBar();
         ab.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg));
         ab.setDisplayHomeAsUpEnabled(true);
-              
+          
         
         setContentView(R.layout.singlechat);
         
         Intent startIntent = this.getIntent();
         Bundle extras = startIntent.getExtras();
-        String username = extras.getString("username");
-        String showname = extras.getString("showname");
-        String address = extras.getString("address");
-        String photoURI = extras.getString("photoURI");
+        
+        mOpposite = extras.getParcelable("contact");
+        ab.setTitle("Chat mit " + mOpposite.getShowname());   
+
         
         
-        Debug dbg = Debug.getInstance(); 
-        
-        if (username == null ||
-        	showname == null ||
-        	address == null ||
-        	photoURI == null)
-        {
-        	dbg.out("Some arguments were strange");
-        	finish();
-        }
-        
-       
-        
-        Contact opposite = new Contact(username,showname,photoURI);
-        opposite.setAddress(address);
-                       
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        ChatContext ctx = ChatContext.getChatContext(prefs.getString("account_username", ""), prefs.getString("account_password", ""));
-        
-        if (!ctx.isInitiated())
-    	{
-    		dbg.out("Fehler beim initiieren:" + ctx.getLastErrorMessage());
-    		return;
-    	}
-    	if (!ctx.isConnected() && !ctx.connect())
-    	{
-    		dbg.out("Fehler beim verbinden:" + ctx.getLastErrorMessage());
-    		return;
-    	}
-        
+                               
+                
         final MessageView listview = (MessageView) findViewById(R.id.messageslistview);
         listview.smoothScrollBy(listview.getCount() * 500, 1000);
         listview.setDivider(null);
@@ -118,44 +102,69 @@ public class SingleChat extends FragmentActivity {
         final MessageAdapter msga = listview.getMessageAdapter();
         //final MessageAdapter msga = new MessageAdapter(this);
         //listview.setAdapter(msga);
- 
-        mConversation = Conversation.spawnConversation(opposite, ctx);
-        mConversation.resetUnreadCount();
+        this.mOpposite.resetUnreadCount();
+        this.mOpposite.setOpenState(true);
+        startChatService();
+   }
         
-        ab.setTitle("Chat mit " + mConversation.getOpposite().getShowname());
-        //Toast.makeText(this, "Chatting with " + mConversation.getOpposite().getShowname()  + "|" + mConversation.getOpposite().getAddress(), Toast.LENGTH_LONG).show();
-        
-        List<Message> history = mConversation.getHistory(0);
-        dbg.out("Historysize=" + history.size());        
-        for (int i=0;i<history.size();i++)
+public void onServiceConnected()
+{
+	mConversation = mOpposite.getConversation();
+	final MessageView listview = (MessageView) findViewById(R.id.messageslistview);
+	final MessageAdapter msga = listview.getMessageAdapter();
+	
+        try
         {
-        	Message msg = history.get(i);
-        	if (msg.getIncoming())
+        	List<Message> history = mConversation.getHistory();
+        	for (int i=0;i<history.size();i++)
         	{
-        		msg.setColor(default_incomingColor);
+        		Message msg = history.get(i);
+        		if (msg.getIncoming())
+        		{
+        			msg.setColor(default_incomingColor);
+        		}
+        		else 
+        		{
+        			msg.setColor(default_outgoingColor);
+        		}
+        		msga.addMessage(msg);
         	}
-        	else
+        	if (history.size() == 0)
         	{
-        		msg.setColor(default_outgoingColor);
+        		Message first = new Message();
+        		msga.addMessage(first);
+        		msga.removeMessage(first);
         	}
-        	msga.addMessage(history.get(i));
+        }
+        catch ( RemoteException e)
+        {
+        	Log.v("SingleChat","Der Verlauf konnte nicht geladen werden. Serviceverbindungsproblem");
         }
         
-        if(history.size()==0)
-        	msga.addMessage(new Message());
-         
-        mListener = new OnNewMessageListener() {
-			
-			@Override
-			public void onNewMessage(Conversation _conversation, Message _newmessage) {
-				Log.v("SingleChat","Message recieved");
-				_newmessage.setColor(default_incomingColor);
-				msga.addScrolledMessage(_newmessage, listview);
-				_conversation.resetUnreadCount();
-			}
-		};
-		mConversation.setOnNewMessageListener(mListener);
         
+        
+        mListener = new OnServiceNewMessageListener.Stub()
+        {
+			@Override
+			public void onNewMessage(ServiceConversation _conversation,
+					Message recieved_message) throws RemoteException {
+				Log.v("SingleChat","Message recieved");
+				recieved_message.setColor(default_incomingColor);
+				msga.addScrolledMessage(recieved_message, listview);
+				SingleChat.this.mOpposite.resetUnreadCount();
+				
+			}
+        	
+        };
+		try
+		{
+        	mConversation.addOnServiceNewMessageListener(mListener);
+		}
+		catch (RemoteException e)
+		{
+			Log.v("SingleChat","Fehler, der OnServiceNewMessageListener konnte nicht geaddet werden.");
+		}
+		
         
         final Activity ownact = this;
 
@@ -167,7 +176,7 @@ public class SingleChat extends FragmentActivity {
 			@Override
 			public void onClick(View v) {
 				SingleChat myact = ((SingleChat)ownact);
-				Conversation myconv = myact.mConversation;
+				ServiceConversation myconv = myact.mConversation;
 				if (myconv == null)
 				{
 					return;
@@ -180,11 +189,32 @@ public class SingleChat extends FragmentActivity {
 				{
 					return;
 				}
-				Message msg = myconv.prepareMessage();
-				msg.setColor(default_outgoingColor);
-				msg.setMessageText(content.toString());
-				msg.send();
-				msga.addScrolledMessage(msg, listview);
+				Message msg = new Message();
+				try
+				{
+					msg = myconv.prepareMessage();
+				}
+				catch (RemoteException e)
+				{
+					Log.v("SingleChat","Fehler beim Vorbereiten der Nachricht ( lokal )");
+				}
+				finally
+				{
+					
+					msg.setColor(default_outgoingColor);
+					msg.setMessageText(content.toString());
+					
+					try
+					{
+						myconv.sendMessage(msg);
+					}
+					catch (RemoteException e)
+					{
+						Log.v("SingleChat","Fehler beim Senden der Nachricht ( lokal )");
+					}
+					
+					msga.addScrolledMessage(msg, listview);
+				}
 			}
 		});
         EditText sendfield = (EditText)findViewById(R.id.msg_field);
@@ -198,39 +228,26 @@ public class SingleChat extends FragmentActivity {
 				return false;
 			}
 		});
-        
-               /*String[] testwords = {"hallo","ich","bin","ja","nein","doch","aber","idiot","hey!","lieber","ist","luca","clemens","dome","jan","schule","bier","bitte","ein","eine","arsch","tschüss",".","scheiße","nicht"};
-               String[] testSenders = {"Luca","Clemens","Dome","Jan"};
-               int[] colors = {Color.rgb(29, 106, 115),Color.rgb(50,166,166),Color.rgb(81,191,143),Color.rgb(109,217,110)};
-               
-               for(int i=0;i<100;i++) {
-            	   String testmessage = "";
-            	   for(int a=0;a<(int) (Math.random()*30+4);a++) {
-            		   testmessage = testmessage + testwords[(int) (Math.random()*testwords.length)] + " ";
-            	   }
-            	   int randomint = (int) (Math.random()*4);
-            	   String testsender = testSenders[randomint];
-            	   boolean incoming;
-            	   
-            	   if (randomint==3)
-            		   incoming = false;
-            	   else 
-            		   incoming = true;
-            	   
-	                 //Syntax: Message foo = new Message(String nachricht, String absender, boolean ankommend, int farbe);
-	                Message msg = new Message(testmessage,testsender, incoming, colors[randomint]);
-	                
-	                msga.addMessage(msg);
-               }*/
 
    }
-    
+
+    public void onDestroy()
+    {
+    	super.onDestroy();
+    	unbindService(mConnection);
+    }
+		    
+		    
+		    
+
+
+	
     @Override
     public void onPause() {
         super.onPause();
         
-        mConversation.setOnNewMessageListener(null);
-                
+       
+        this.mOpposite.setOpenState(false);       
         overridePendingTransition(R.anim.enterfromleft, R.anim.leavetoright);
         
    }
@@ -238,16 +255,44 @@ public class SingleChat extends FragmentActivity {
     @Override
     public void onResume() {
     	super.onResume();
+    	this.mOpposite.setOpenState(true);
     	
-    	mConversation.setOnNewMessageListener(mListener);
     }
     
    @Override
    public void onStop() {
 	   super.onStop();
-	   mConversation.setOnNewMessageListener(null);
+	   this.mOpposite.setOpenState(false);
    }
-    
+   public void startChatService()
+   {
+   	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+   	
+   	Intent serviceIntent = new Intent(this, ChatService.class);
+   	this.startService(serviceIntent);
+   	
+   	
+   	bindService(serviceIntent, mConnection,0);
+   	
+   }
+   private ServiceConnection mConnection = new ServiceConnection() {
+
+		public void onServiceConnected(ComponentName className, IBinder service) {
+		    mServiceChatContext = ServiceChatContext.Stub.asInterface(service);
+		    if (mServiceChatContext == null)
+		    {
+		    	Log.v("","ChatContext = 0");
+		    	return;
+		    }
+		    SingleChat.this.mOpposite.setContext(mServiceChatContext);
+		    SingleChat.this.onServiceConnected();
+		}
+
+		public void onServiceDisconnected(ComponentName className) {
+			mChatService = null;
+			mServiceChatContext = null;
+		}
+	};
    @Override
    public boolean onOptionsItemSelected(MenuItem item)
    {
