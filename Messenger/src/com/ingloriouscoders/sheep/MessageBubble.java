@@ -225,6 +225,7 @@ public class MessageBubble extends View {
 						canvas.drawText(lines.get(i), paddingleft+10, (int) (paddingup*1.5) + ascent*3 + (ascent+top)*i, textPaint);
 					}
 				}
+				
 	}
 	
 	public void setMessage(String _sender, String _msgtext) {
