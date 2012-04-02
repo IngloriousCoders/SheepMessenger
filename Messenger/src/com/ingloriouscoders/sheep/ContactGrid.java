@@ -11,6 +11,8 @@ import android.util.Log;
 public class ContactGrid extends GridView {
 	
 	private boolean adapter_set = false;
+	
+	protected ContactAdapter mAdapter;
 	public ContactGrid(Context ctx)
 	{
 		super(ctx);
@@ -31,6 +33,7 @@ public class ContactGrid extends GridView {
 	{
 		ContactAdapter adp = new ContactAdapter(getContext());
 		this.setAdapter(adp);
+		mAdapter = adp;
 		((ContactAdapter)adp).mListener = mListener;
 	}
 	
@@ -48,6 +51,7 @@ public class ContactGrid extends GridView {
 				if (index != -1)
 				{
 					ContactBox cb = (ContactBox)thisobj.getChildAt(index);
+					Log.v("ContactGrid","CB to invalidate unread_count=" + cb.getContact().getUnreadMessages());
 					thisobj.invalidateChild(cb, null);
 				}
 			}

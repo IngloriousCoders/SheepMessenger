@@ -109,14 +109,23 @@ public class SheepMessenger extends FragmentActivity {
     private ServiceConnection mConnection = new ServiceConnection() {
 
 		public void onServiceConnected(ComponentName className, IBinder service) {
-		    mServiceChatContext = ServiceChatContext.Stub.asInterface(service);
+		    SheepMessenger.this.mServiceChatContext = ServiceChatContext.Stub.asInterface(service);
 		    if (mServiceChatContext == null)
 		    {
 		    	Log.v("","ChatContext = 0");
 		    	return;
+		    } 
+		    if (!mContactFragment.fillGrid(mServiceChatContext))
+		    {
+			    mContactFragment.mListener = new ContactFragment.OnContactFragmentCreated() {
+					
+					@Override
+					public void contactFragmentCreated(ContactFragment _frag) {
+						Log.v("SheepMessener","Called");
+						_frag.fillGrid(SheepMessenger.this.mServiceChatContext);					
+					}
+				};
 		    }
-
-		    mContactFragment.fillGrid(mServiceChatContext,SheepMessenger.this);
 		    SheepMessenger.this.connected = true;
 	    	
 			Toast.makeText(SheepMessenger.this, "Verbunden",
@@ -170,7 +179,9 @@ public class SheepMessenger extends FragmentActivity {
     public void onDestroy()
     {
     	super.onDestroy();
+    	
     	unbindService(mConnection);
+    	Log.v("SheepMessenger","Destroyed");
     }
 
     

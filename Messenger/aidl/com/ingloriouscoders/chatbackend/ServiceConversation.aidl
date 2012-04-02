@@ -16,4 +16,6 @@ interface ServiceConversation
 	
 	void addOnServiceNewMessageListener(in OnServiceNewMessageListener _listener);
 	void removeOnServiceNewMessageListener(in OnServiceNewMessageListener _listener);
+	
+	void setNotificationMuted(in boolean state);
 }

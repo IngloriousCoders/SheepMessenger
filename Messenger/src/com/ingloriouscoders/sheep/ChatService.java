@@ -4,9 +4,11 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -28,6 +30,10 @@ public class ChatService extends Service {
 	
 	private List<OnServiceSpawnConversationListener> listeners = new ArrayList<OnServiceSpawnConversationListener>();
 	private ChatContext mChatContext;
+	
+	String ns = Context.NOTIFICATION_SERVICE;
+	NotificationManager mNotificationManager;
+
 	
 	private ServiceChatContext.Stub chatContextImplementation = new ServiceChatContext.Stub()
 	{
@@ -71,102 +77,152 @@ public class ChatService extends Service {
 		}
 		
 	};
-	
-	private ServiceConversation ServiceInterfaceFromObject(final Conversation _conversation)
+	private final List<String> conversationListIndex = new ArrayList<String>();
+	private final List<ServiceConversation> conversationList = new ArrayList<ServiceConversation>();
+	private ServiceConversation ServiceInterfaceFromObject(final Conversation _conversation) throws RemoteException
 	{
-		return new ServiceConversation.Stub()
+		if (!ChatService.this.conversationListIndex.contains(_conversation.getOpposite().getAddress()))
 		{
-			
-			
-			{
-				final ServiceConversation thisobj = this;
-				_conversation.addOnNewMessageListener(new OnNewMessageListener() {
-					{
-						mServiceConversation = thisobj;
-					}
-					final ServiceConversation mServiceConversation;
-					@Override
-					public void onNewMessage(Conversation _conversation, Message _newmessage) {
-						synchronized ( mListeners)
-						{
-							//Log.v("ChatService","Conversation listener called - List size:" + mListeners.size() );
-							try
-							{
-								for( OnServiceNewMessageListener currentListener : mListeners)
-								{
-									currentListener.onNewMessage(mServiceConversation, _newmessage);
-								}
-							}
-							catch (RemoteException e)
-							{
-								Log.v("ChatService","Error calling the newMessageListeners");
-							}
+			_conversation.addOnNewMessageListener( new OnNewMessageListener() {
+				
+				@Override
+				public void onNewMessage(Conversation _conversation, Message _newmessage) {
+					if (!_conversation.getNotificationMuted())
+						ChatService.this.addMessageNotification(_conversation.getOpposite(), _newmessage);					
+				}
+			});
 					
-						}
-						
-					}
-				});
-			}
-				
-			public List<OnServiceNewMessageListener> mListeners = new ArrayList<OnServiceNewMessageListener>();
-			@Override
-			public Contact getOpposite() throws RemoteException {
-				synchronized(_conversation)
-				{
-					return _conversation.getOpposite();
-				}
-			}
-
-			@Override
-			public List<Message> getHistory() throws RemoteException 
-			{
-				synchronized(_conversation)
-				{	
-					return _conversation.getHistory(0);
-				}
-			}
-
-			@Override
-			public Message prepareMessage() throws RemoteException {
-				synchronized(_conversation)
-				{
-					Message msg = _conversation.prepareMessage();
-					Log.v("ChatService","Nachricht an Kontakt " + _conversation.getOpposite().getShowname() + " angefordert:" +
-							msg.getMessageText() + " von " + msg.getSender());
-					return msg;
-				}
-			}
-
-			@Override
-			public boolean sendMessage(Message _msg) throws RemoteException {
-				synchronized(_conversation)
-				{
-					Log.v("ChatService","Nachricht an Kontakt " + _conversation.getOpposite().getShowname() + " gesendet:" + _msg.getMessageText());
-					return _conversation.sendMessage(_msg);
-				}
-			}
-
-			@Override
-			public void addOnServiceNewMessageListener(
-					OnServiceNewMessageListener _listener)
-					throws RemoteException {
-				
-				mListeners.add(_listener);
-				
-			}
-
-			@Override
-			public void removeOnServiceNewMessageListener(
-					OnServiceNewMessageListener _listener)
-					throws RemoteException {
-				mListeners.add(_listener);				
-			}
 			
-		};
+			ChatService.this.conversationListIndex.add(_conversation.getOpposite().getAddress());
+			
+			
+			ServiceConversation nServiceConversation =  new ServiceConversation.Stub()
+			{
+				
+				
+				{
+					final ServiceConversation thisobj = this;
+					
+						_conversation.addOnNewMessageListener(new OnNewMessageListener() {
+							{
+								mServiceConversation = thisobj;
+							}
+							final ServiceConversation mServiceConversation;
+							@Override
+							public void onNewMessage(Conversation _conversation, Message _newmessage) {
+								synchronized ( mListeners)
+								{
+									Log.v("ChatService","Conversation listener called - List size:" + mListeners.size() );
+									
+									try
+									{
+										for( OnServiceNewMessageListener currentListener : mListeners)
+										{
+											currentListener.onNewMessage(mServiceConversation, _newmessage);
+										}
+									}
+									catch (RemoteException e)
+									{
+										Log.v("ChatService","Error calling the newMessageListeners");
+									}
+							
+								}
+								
+								
+							}
+							
+						});
+					
+				}
+				
+				
+				
+				public List<OnServiceNewMessageListener> mListeners = new ArrayList<OnServiceNewMessageListener>();
+				@Override
+				public Contact getOpposite() throws RemoteException {
+					synchronized(_conversation)
+					{
+						return _conversation.getOpposite();
+					}
+				}
+
+				@Override
+				public List<Message> getHistory() throws RemoteException 
+				{
+					synchronized(_conversation)
+					{	
+						return _conversation.getHistory(0);
+					}
+				}
+
+				@Override
+				public Message prepareMessage() throws RemoteException {
+					synchronized(_conversation)
+					{
+						Message msg = _conversation.prepareMessage();
+						Log.v("ChatService","Nachricht an Kontakt " + _conversation.getOpposite().getShowname() + " angefordert:" +
+								msg.getMessageText() + " von " + msg.getSender());
+						return msg;
+					}
+				}
+
+				@Override
+				public boolean sendMessage(Message _msg) throws RemoteException {
+					synchronized(_conversation)
+					{
+						Log.v("ChatService","Nachricht an Kontakt " + _conversation.getOpposite().getShowname() + " gesendet:" + _msg.getMessageText());
+						return _conversation.sendMessage(_msg);
+					}
+				}
+
+				@Override
+				public void addOnServiceNewMessageListener(
+						OnServiceNewMessageListener _listener)
+						throws RemoteException {
+					synchronized ( mListeners )
+					{
+						if (!mListeners.contains(_listener))
+							mListeners.add(_listener);
+					}
+					
+				}
+
+				@Override
+				public void removeOnServiceNewMessageListener(
+						OnServiceNewMessageListener _listener)
+						throws RemoteException {
+					synchronized ( mListeners )
+					{
+						mListeners.remove(_listener);
+					}
+				}
+				@Override 
+				public void setNotificationMuted(boolean state)
+				{
+					_conversation.setNotificationMuted(state);
+				}
+			};
+			
+			
+			
+			
+			conversationList.add(nServiceConversation);
+			return nServiceConversation;
+		}
+		for (ServiceConversation currentConversation : conversationList)
+		{
+			if (currentConversation.getOpposite().getAddress() == _conversation.getOpposite().getAddress())
+			{
+				return currentConversation;
+			}
+						
+		}
+		return null;
 	}
 	
 	@Override
 	public IBinder onBind(Intent intent) {
+	
 		Log.v("ChatService","Verbindung zum Service hergestellt");
 		return chatContextImplementation;
 		
@@ -176,11 +232,12 @@ public class ChatService extends Service {
 	{
 		super.onCreate();
 		
+		mNotificationManager = (NotificationManager) getSystemService(ns);
 		
 				
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
     	
-    	Intent serviceIntent = new Intent(this, ChatService.class);
+    	
     	username = prefs.getString("account_username", "");
     	password = prefs.getString("account_password", "");
     	
@@ -210,6 +267,72 @@ public class ChatService extends Service {
     	
     	
 	}
+	private int notification_id = 0;
+	private String last_address = "";
+	private int last_count = 1;
+	private int contact_count = 1;
 	
+	BroadcastReceiver onResetNotificationCount = new BroadcastReceiver()
+	{
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.v("ChatService","Reset current Notificationcount");
+			ChatService.this.last_count = 1;
+			ChatService.this.contact_count = 1;
+			ChatService.this.last_address = "";
+			
+		}
+		
+	};
+	
+	private void addMessageNotification(Contact _contact,Message _msg)
+	{
+		
+		CharSequence contentTitle;
+		CharSequence contentText;
+		if (!last_address.equals(_contact.getAddress()))
+		{
+			contentText = _msg.getMessageText();
+			contentTitle = "Neue Nachricht von " + _contact.getShowname();
+			if (last_count != 1)
+			{
+				
+			}
+		}
+		else
+		{
+			last_count++;
+			contentText = _msg.getMessageText();
+			contentTitle = last_count + " neue Nachrichten von " + _contact.getShowname();
+			mNotificationManager.cancel(notification_id-1);
+		}
+		
+		
+		
+		
+		int icon = R.drawable.notification;
+		long when = System.currentTimeMillis();
+	
+		Notification notification = new Notification(icon,contentTitle,when);	
+		
+		Intent notificationIntent = new Intent(this, SingleChat.class);
+		notificationIntent.putExtra("service_called", 1);
+		notificationIntent.putExtra("contact", _contact);
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+		
+		
+		notification.setLatestEventInfo(this, contentTitle, contentText, contentIntent);
+		
+		Intent deleteIntent = new Intent(this, BroadcastReceiver.class);
+		deleteIntent.putExtra("reset_notification_count", 1);
+		notification.deleteIntent = PendingIntent.getService(this, 0, deleteIntent, 0);
+		
+				
+		mNotificationManager.notify(notification_id, notification);
+		last_address = _contact.getAddress();
+		notification_id++;
+		
+	}
     
 }

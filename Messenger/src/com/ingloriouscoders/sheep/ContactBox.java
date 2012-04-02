@@ -82,6 +82,8 @@ public class ContactBox extends View {
 	
 	private void initializeBitmap()
 	{
+		this.setOnClickListener(clickListener);
+		
 		int box_height = width;
 		
 		Bitmap bitmap = standard_image;
@@ -311,13 +313,32 @@ public class ContactBox extends View {
 		this.mContact = _contact;
 		initializeBitmap();
 	}
-	public Contact getContact()
+	public ContactStated getContact()
 	{
 		return mContact;
 	}
-	
-
-	
+	interface OnContactClickedListener
+	{
+		void onContactClicked(View view,ContactStated _contact);
+		
+	};
+	private OnContactClickedListener mContactClickedListener;
+	public void setOnContactClickListener(OnContactClickedListener _listener)
+	{
+		this.mContactClickedListener = _listener;
+	}
+	private View.OnClickListener clickListener = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			Log.v("ContactBox","My Contact has " + ContactBox.this.mContact.getUnreadMessages() + " unread messages");
+			if (ContactBox.this.mContactClickedListener != null)
+			{
+				ContactBox.this.mContactClickedListener.onContactClicked(ContactBox.this, ContactBox.this.mContact);
+			}
+			
+		}
+	};
 	
 }
 	

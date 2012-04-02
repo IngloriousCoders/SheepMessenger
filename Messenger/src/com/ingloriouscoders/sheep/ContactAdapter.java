@@ -59,7 +59,7 @@ public class ContactAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return (long)position;
     }
-
+    private ContactStated currentContact;
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
         
@@ -74,24 +74,28 @@ public class ContactAdapter extends BaseAdapter {
     	{
     		cb = (ContactBox)convertView;
     	}
-    	final ContactStated thiscontact = mContacts.get(position);
+    	ContactStated contact = mContacts.get(position);
     	final ContactAdapter ca = this;
-    	    	
-    	cb.setContact(thiscontact);
-    	thiscontact.addOnContactStatedDataChangedListener(mListener);
-    	cb.setOnClickListener(new View.OnClickListener() {
-        	public void onClick(View view) {
-                Intent myIntent = new Intent(view.getContext(), SingleChat.class);
-                
-                myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                myIntent.putExtra("contact",thiscontact);
-                ((Activity)mContext).startActivityForResult(myIntent, 0);
-                ((Activity)mContext).overridePendingTransition(R.anim.enterfromright, R.anim.leavetoleft);
-               
-         	}
-    	});
     	
+    	currentContact = contact;
     	
+    	cb.setContact(contact);
+    	contact.addOnContactStatedDataChangedListener(mListener);
+    	cb.setOnContactClickListener(new ContactBox.OnContactClickedListener() {
+			
+			@Override
+			public void onContactClicked(View view, ContactStated _contact) {
+				 Intent myIntent = new Intent(view.getContext(), SingleChat.class);
+	                
+	                myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+	                myIntent.putExtra("contact_id",_contact.listID);
+	                
+	                ((Activity)mContext).startActivityForResult(myIntent, 0);
+	                ((Activity)mContext).overridePendingTransition(R.anim.enterfromright, R.anim.leavetoleft);
+				
+			}
+		});
+        
     	return cb;
     }
     

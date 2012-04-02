@@ -18,6 +18,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.util.Log;
+import android.app.Activity;
 
 
 public class ContactFragment extends Fragment {
@@ -26,47 +27,67 @@ public class ContactFragment extends Fragment {
 	protected ContactAdapter adp;
 	
 	
+	interface OnContactFragmentCreated
+	{
+		public void contactFragmentCreated(ContactFragment _frag);
+	}
+	OnContactFragmentCreated mListener;
+	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);		
+		
+
 	}
 	
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-		mContentView = inflater.inflate(R.layout.contacts, null);
-		//mContext = container.getContext();
 		
-		ContactGrid gv = (ContactGrid)mContentView.findViewById(R.id.contactGridView);
 		
-		adp = (ContactAdapter)gv.getAdapter();
 		
 		/*Contact special_contact = new Contact("user","Hans Peter","content://com.android.contacts/contacts/66/photo");
 		special_contact.setAddress("thebkfamily@googlemail.com");
 		special_contact.setUnreadMessages(5);
 		adp.addContact(special_contact);*/
+		mContentView = inflater.inflate(R.layout.contacts, null);
+		mContext = container.getContext();
+		
+		ContactGrid gv = (ContactGrid)mContentView.findViewById(R.id.contactGridView);
+		
+		adp = (ContactAdapter)gv.getAdapter();
+		if (mListener != null)
+		{
+			mListener.contactFragmentCreated(this);
+		}
 		
 		
 		return mContentView;
 
     }
-	public void fillGrid(ServiceChatContext ctx,Context android_context)
+	public boolean fillGrid(ServiceChatContext ctx)
 	{
+		if (adp == null)
+		{
+			return false;
+		}
+		
 		if (ctx == null)
 		{
 			Log.v("ContactFragment","Context=0");
-			return;
+			return false;
 		}
-		mContext = android_context;
+		Log.v("ContactFragment","Test 1 bestanden");
 		if (mContext == null)
 		{
 			Log.v("ContactFragment","Context is null");
-			return;
+			return false;
 		}
 		Log.v("ContactFragment","Filling the Grid");
 		ContentResolver cr = mContext.getContentResolver();
+		
 		Cursor c = cr.query(Data.CONTENT_URI,
 		          new String[] {Data._ID,Data.PHOTO_URI ,Data.DISPLAY_NAME,Email.ADDRESS},
 		          null,
@@ -76,6 +97,7 @@ public class ContactFragment extends Fragment {
 		int photo_file_index = c.getColumnIndex(Data.PHOTO_URI );
 		int email_index = c.getColumnIndex(Email.ADDRESS);
 		String last_string = "";
+		
 		
 		
 		while(c.moveToNext())
@@ -90,22 +112,31 @@ public class ContactFragment extends Fragment {
 					continue;
 				}
 				
-				ContactStated contact;
-				if (photo_uri != null)
-				{
-					contact = new ContactStated(new Contact("user",c.getString(display_name_index),photo_uri,email_address),ctx);
-				}
-				else
-				{
-					contact = new ContactStated(new Contact("user",c.getString(display_name_index),null,email_address),ctx);
-				}
-				adp.addContact(contact);
+				ContactStated contact = ContactStatedManager.getContact(email_address);
 				
+				
+				if (contact == null)
+				{
+				
+					if (photo_uri != null)
+					{
+						contact = new ContactStated(new Contact("user",c.getString(display_name_index),photo_uri,email_address),ctx);
+					}
+					else
+					{
+						contact = new ContactStated(new Contact("user",c.getString(display_name_index),null,email_address),ctx);
+					}
+				}
+				ContactStated newctc = ContactStatedManager.addContact(contact);
+				adp.addContact(newctc);				
 				last_string = c.getString(display_name_index);
 			}
 			
 		}
+		
 		c.close();
+		return true;
 	}
+	
 
 }

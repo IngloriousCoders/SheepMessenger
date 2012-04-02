@@ -23,6 +23,7 @@ public class Conversation{
 	protected Chat mChat;
 	
 	private int unreadCount = 0;
+	private boolean notificationMuted = false;
 	
 	private List<Message> history = new Vector<Message>();
 	
@@ -78,6 +79,11 @@ public class Conversation{
 		if (mChat == null)
 		{
 			Log.v("chatbackend","Chat is null");
+			return false;
+		}
+		if (!mContext.isConnected())
+		{
+			Log.v("chatbackend","Nicht mit Server verbunden");
 			return false;
 		}
 		try {
@@ -143,6 +149,14 @@ public class Conversation{
 	public void removeOnNewMessageListener(OnNewMessageListener _listener)
 	{
 		this.newMessageListeners.remove(_listener);
+	}
+	public void setNotificationMuted(boolean state)
+	{
+		this.notificationMuted = state;
+	}
+	public boolean getNotificationMuted()
+	{
+		return this.notificationMuted;
 	}
 
 }

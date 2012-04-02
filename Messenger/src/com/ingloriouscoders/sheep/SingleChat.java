@@ -88,10 +88,28 @@ public class SingleChat extends FragmentActivity {
         Intent startIntent = this.getIntent();
         Bundle extras = startIntent.getExtras();
         
-        mOpposite = extras.getParcelable("contact");
-        ab.setTitle("Chat mit " + mOpposite.getShowname());   
-
+        if (extras.getInt("service_called") == 1)
+        {
+        	mOpposite = ContactStatedManager.addContact(new ContactStated( (Contact)extras.getParcelable("contact") ) );
+        	if (mOpposite == null)
+        	{
+        		Toast.makeText(SingleChat.this, "Fehler: Der Kontakt konnte nicht geladen werden",Toast.LENGTH_SHORT).show();
+        		finishActivity(0);
+        	}
+        }
+        else
+        {
+        	int contactID = extras.getInt("contact_id");
+        	mOpposite = ContactStatedManager.getContact(contactID);
+        }
         
+        if (mOpposite == null)
+        { 
+        	Log.v("SingleChat","Opposite is null");
+        	finishActivity(0);
+        }
+        
+        ab.setTitle("Chat mit " + mOpposite.getShowname());   
         
                                
                 
@@ -103,13 +121,23 @@ public class SingleChat extends FragmentActivity {
         //final MessageAdapter msga = new MessageAdapter(this);
         //listview.setAdapter(msga);
         this.mOpposite.resetUnreadCount();
+        this.mOpposite.setUnreadMessages(0);
         this.mOpposite.setOpenState(true);
         startChatService();
    }
         
 public void onServiceConnected()
 {
-	mConversation = mOpposite.getConversation();
+	try
+	{
+		mConversation = mServiceChatContext.spawnConversation(mOpposite);
+	}
+	catch (RemoteException e)
+	{
+		Log.v("SingleChat","Konversation konnte nicht geladen werden");
+		return;
+	}
+	
 	final MessageView listview = (MessageView) findViewById(R.id.messageslistview);
 	final MessageAdapter msga = listview.getMessageAdapter();
 	
@@ -150,14 +178,13 @@ public void onServiceConnected()
 					Message recieved_message) throws RemoteException {
 				Log.v("SingleChat","Message recieved");
 				recieved_message.setColor(default_incomingColor);
-				msga.addScrolledMessage(recieved_message, listview);
-				SingleChat.this.mOpposite.resetUnreadCount();
-				
+				msga.addScrolledMessage(recieved_message, listview);			
 			}
         	
         };
 		try
 		{
+			mConversation.removeOnServiceNewMessageListener(mListener);
         	mConversation.addOnServiceNewMessageListener(mListener);
 		}
 		catch (RemoteException e)
@@ -247,15 +274,31 @@ public void onServiceConnected()
         super.onPause();
         
        
-        this.mOpposite.setOpenState(false);       
+        this.mOpposite.setOpenState(false);               
+	   	try
+	   	{
+	   		this.mConversation.removeOnServiceNewMessageListener(mListener);
+	   	}
+	   	catch( RemoteException e)
+	   	{
+	   		
+	   	}
         overridePendingTransition(R.anim.enterfromleft, R.anim.leavetoright);
         
    }
-    
+    @Override
+    public void onStart() {
+    	super.onStart();
+    	this.mOpposite.setOpenState(true);
+
+
+    	
+    }
     @Override
     public void onResume() {
     	super.onResume();
     	this.mOpposite.setOpenState(true);
+    	
     	
     }
     
@@ -263,6 +306,14 @@ public void onServiceConnected()
    public void onStop() {
 	   super.onStop();
 	   this.mOpposite.setOpenState(false);
+	   	try
+	   	{
+	   		this.mConversation.removeOnServiceNewMessageListener(mListener);
+	   	}
+	   	catch( RemoteException e)
+	   	{
+	   		
+	   	}
    }
    public void startChatService()
    {
@@ -284,7 +335,7 @@ public void onServiceConnected()
 		    	Log.v("","ChatContext = 0");
 		    	return;
 		    }
-		    SingleChat.this.mOpposite.setContext(mServiceChatContext);
+		    //SingleChat.this.mOpposite.setContext(mServiceChatContext);
 		    SingleChat.this.onServiceConnected();
 		}
 

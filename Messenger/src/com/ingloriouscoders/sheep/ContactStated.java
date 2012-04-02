@@ -19,22 +19,24 @@ import java.util.List;
 public class ContactStated extends Contact {
 
 	
-	private OnServiceNewMessageListener mListener = new OnServiceNewMessageListener.Stub()
+	protected OnServiceNewMessageListener mListener = new OnServiceNewMessageListener.Stub()
 	{
 		@Override
 		public void onNewMessage(ServiceConversation _conversation,
 				Message recieved_message) throws RemoteException {
-			if ( !ContactStated.this.opened )
-			{
-				
-				ContactStated.this.unreadCount++;
-				Log.v("Contact","Der Kontakt " + ContactStated.this.getShowname() + " hat dir eine Nachricht geschrieben. count=" + ContactStated.this.unreadCount + ",size=" + ContactStated.this.dataChangeListeners.size());
-				for (OnContactStatedDataChanged listener : ContactStated.this.dataChangeListeners)
-				{
-					listener.dataChanged(ContactStated.this);
-				}
 			
+			ContactStated ctc_stated = ContactStatedManager.getContact(_conversation.getOpposite().getAddress());
+			if ( !ctc_stated.opened )
+			{
+				ctc_stated.unreadCount++;
+				Log.v("Contact","Contact" + ctc_stated.mInstanceNumber + ": Der Kontakt " + ctc_stated.getShowname() + " hat dir eine Nachricht geschrieben. count=" + ctc_stated.unreadCount + ",size=" + ctc_stated.dataChangeListeners.size());
+				for (OnContactStatedDataChanged listener : ctc_stated.dataChangeListeners)
+				{
+					listener.dataChanged(ctc_stated);
+					
+				}
 			}
+			
 		}
 		
 	};
@@ -48,10 +50,18 @@ public class ContactStated extends Contact {
 	
 	private boolean valid = true;
 	
+	protected int listID = -1;
+	
+	private static int instance_number = 0;
+	private int mInstanceNumber;
+	
+	
 	public ContactStated(String _username,String address,ServiceChatContext context) {
 		super(_username);
 		initiateConnections();
 		mContext = context;
+		mInstanceNumber = instance_number;
+		instance_number++;
 						
 	}
 	public ContactStated(Contact _origin,ServiceChatContext context)
@@ -59,6 +69,12 @@ public class ContactStated extends Contact {
 		super(_origin.getUsername(),_origin.getShowname(),_origin.getPhotoURI(),_origin.getAddress());
 		mContext = context;
 		initiateConnections();
+	}
+	
+	public ContactStated(Contact _origin)
+	{
+		super(_origin.getUsername(),_origin.getShowname(),_origin.getPhotoURI(),_origin.getAddress());
+	
 	}
 	private void initiateConnections()
 	{
@@ -73,6 +89,7 @@ public class ContactStated extends Contact {
 		}
 		try
 		{
+			mConversation.removeOnServiceNewMessageListener(mListener);
 			mConversation.addOnServiceNewMessageListener(mListener);
 		}
 		catch ( RemoteException e )
@@ -89,6 +106,26 @@ public class ContactStated extends Contact {
 	public void setOpenState(boolean state)
 	{
 		this.opened = state;
+		if (this.opened)
+		{
+			Log.v("ContactStated","Contact" + mInstanceNumber + ": Contact is now opened");
+			this.unreadCount = 0;
+		}
+		else
+			Log.v("ContactStated","Contact" + mInstanceNumber + ": Contact is now closed");
+			
+		if(this.mConversation != null) 
+		{
+			try
+			{
+				mConversation.setNotificationMuted(this.opened);
+			}
+			catch (RemoteException e)
+			{
+				
+			}
+		}
+
 	}
 	public boolean getOpenState()
 	{
@@ -101,6 +138,10 @@ public class ContactStated extends Contact {
 	public int getUnreadMessages()
 	{
 		return this.unreadCount;
+	}
+	public void setUnreadMessages(int count)
+	{
+		this.unreadCount = count;
 	}
 	
 	public void addOnContactStatedDataChangedListener(OnContactStatedDataChanged _listener)
@@ -122,6 +163,7 @@ public class ContactStated extends Contact {
 		this.mContext = _ctx;
 		initiateConnections();
 	}
+
 	
 	//Parcelable Zeugs
 	
@@ -138,6 +180,7 @@ public class ContactStated extends Contact {
 
 	   dest.writeInt(unreadCount);
 	   dest.writeInt(opened ? 0 : 1);
+	   dest.writeInt(listID);
 	}	
 	public static final Parcelable.Creator<ContactStated> CREATOR
 	    = new Parcelable.Creator<ContactStated>() {
@@ -159,6 +202,8 @@ public class ContactStated extends Contact {
 		unreadCount = in.readInt();
 		opened = in.readInt() == 0;
 		initiateConnections();
+		
+		listID = in.readInt();
 		
 		mContext = null;
 		mConversation = null;
