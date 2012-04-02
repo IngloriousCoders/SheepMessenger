@@ -24,8 +24,8 @@ public class Message implements Parcelable{
 	}
 	
 	public Message() {
-		this.msgtext = "null";
-		this.sender  = "null";
+		this.msgtext = "";
+		this.sender  = "";
 	}
 	
 

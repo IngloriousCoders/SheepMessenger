@@ -161,7 +161,7 @@ public void onServiceConnected()
         	{
         		Message first = new Message();
         		msga.addMessage(first);
-        		msga.removeMessage(first);
+        		//msga.removeMessage(first);
         	}
         }
         catch ( RemoteException e)
