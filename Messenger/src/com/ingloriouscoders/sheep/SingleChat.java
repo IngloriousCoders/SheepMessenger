@@ -233,7 +233,8 @@ public void onServiceConnected()
 					
 					try
 					{
-						myconv.sendMessage(msg);
+						//NEUER SYNTAX: foo.sendMessage(Message nachricht, boolean internal, String[] parameter, boolean timestamp);
+						myconv.sendMessage(msg, false, null, true);
 					}
 					catch (RemoteException e)
 					{

@@ -12,7 +12,7 @@ interface ServiceConversation
 	
 	Message prepareMessage();
 	
-	boolean sendMessage(in Message _msg);
+	boolean sendMessage(in Message _msg, in boolean _internal, in String[] _params, in boolean _timestamp);
 	
 	void addOnServiceNewMessageListener(in OnServiceNewMessageListener _listener);
 	void removeOnServiceNewMessageListener(in OnServiceNewMessageListener _listener);

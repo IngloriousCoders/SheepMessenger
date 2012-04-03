@@ -74,7 +74,7 @@ public class Conversation{
 		history.add(_msg);
 		Log.v("chatbackend","added Message: Size=" + history.size());
 	}
-	public boolean sendMessage(Message _msg)
+	public boolean sendMessage(Message _msg, boolean _internal, String[] _params, boolean _timestamp)
 	{
 		if (mChat == null)
 		{
@@ -87,10 +87,17 @@ public class Conversation{
 			return false;
 		}
 		try {
-			org.jivesoftware.smack.packet.Message newMessage = new org.jivesoftware.smack.packet.Message();
-			newMessage.setBody(_msg.getMessageText());
-							
-		    mChat.sendMessage(newMessage);
+			/*org.jivesoftware.smack.packet.Message newMessage = new org.jivesoftware.smack.packet.Message();
+			newMessage.setBody(_msg.getMessageText());*/
+			
+			XMPPMessage msg = new XMPPMessage(XMPPMessage.CHAT);
+			
+			msg.setBody(_msg.getMessageText());
+			
+			if (_timestamp)
+				msg.setTimestamp();
+			
+		    mChat.sendMessage(msg);
 		}
 		catch (XMPPException e) {
 		    Log.v("chatbackend","Fehler beim Zustellen der Nachricht: '" + _msg.getMessageText() + "'");
@@ -107,7 +114,24 @@ public class Conversation{
 	protected org.jivesoftware.smack.MessageListener smack_listener =  new org.jivesoftware.smack.MessageListener() {
 		@Override
 		public void processMessage(Chat _chat,org.jivesoftware.smack.packet.Message _msg) {
-			Message recieved_msg = new Message(_msg.getBody(),thisclass.getOpposite().getShowname(),true,1);
+			/*boolean proc_internal = false;
+			
+			//Unsauber: Im Moment nur maximal 20 Parameter, sollte aber eigentlich reichen
+			String[] proc_params = new String[20];
+			
+			if (_msg.getBody().equals("") && _msg.getType() == org.jivesoftware.smack.packet.Message.Type.error && _msg.getSubject().startsWith("INTERNALMESSAGE"))
+				proc_internal = true;
+			
+			//if (_msg.getSubject() != null && _msg.getSubject().indexOf("&") != -1)
+				proc_params = _msg.getSubject().split("&");
+			
+			for(int i=0; i<proc_params.length; i++) {
+				Log.v("Custom","Parameter #" + i + ": " + proc_params[i]);
+			}
+			*/
+			
+			//NEUER SYNTAX foo = new Message(String _msgtext, String _sender, boolean _incoming, int _color, boolean _internal, String[] params);
+			Message recieved_msg = new Message(_msg.getBody(), thisclass.getOpposite().getShowname(), true, 1, false, null);
 					
 			if (_msg.getType() == org.jivesoftware.smack.packet.Message.Type.error)
 			{
