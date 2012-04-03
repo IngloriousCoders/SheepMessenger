@@ -14,13 +14,17 @@ public class Message implements Parcelable{
 	private String sender;
 	private boolean incoming;
 	private int color;
+	private boolean internal;
+	private String[] params;
 	
 	
-	public Message(String _msgtext, String _sender, boolean _incoming, int _color) {
+	public Message(String _msgtext, String _sender, boolean _incoming, int _color, boolean _internal, String[] _params) {
 		this.msgtext = _msgtext;
 		this.sender  = _sender;
 		this.incoming = _incoming;
 		this.color = _color;
+		this.internal = _internal;
+		this.params = _params;
 	}
 	
 	public Message() {
@@ -41,10 +45,17 @@ public class Message implements Parcelable{
 	{
 		return incoming;
 	}
-	
 	public int getColor()
 	{
 		return color;
+	}
+	public boolean isInternal()
+	{
+		return internal;
+	}
+	public String[] getParameters()
+	{
+		return params;
 	}
 	
 	
@@ -62,11 +73,7 @@ public class Message implements Parcelable{
 	{
 		this.color = _color;
 	}
-	
-	public static Message getPlaceholder()
-	{
-		return new Message("null","null name",false,0);
-	}
+
 	//Parcelable Zeugs
 	
 

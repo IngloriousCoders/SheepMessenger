@@ -51,10 +51,6 @@ public class MessageAdapter extends BaseAdapter {
 		    	lview.smoothScrollBy(lview.getCount() * 500, lview.getCount() * 1000);
 		    	lview.getMessageAdapter().notifyDataSetChanged();
 		    	lview.updateGraphics(msg);
-
-
-		
-		Log.v("Custom","Debug Marker ASFASE");
     }
     
     public void removeMessage(Message _msg)
@@ -93,6 +89,8 @@ public class MessageAdapter extends BaseAdapter {
         	mb = new MessageBubble(mContext);
         	mb.setMessage(thismessage.getSender(), thismessage.getMessageText());
         	mb.setGraphics(thismessage.getIncoming(), thismessage.getColor());
+        	//mb.giveParameters(thismessage.getParameters());
+        	//System.out.println(thismessage.getParameters()[0]);
         	mb.setLayoutParams(new GridView.LayoutParams(LayoutParams.MATCH_PARENT,mb.calculateHeight()+mb.bubbleoffset));
     	}
     	else
@@ -100,6 +98,7 @@ public class MessageAdapter extends BaseAdapter {
     		mb = (MessageBubble)convertView;
     		mb.setMessage(thismessage.getSender(), thismessage.getMessageText());
     		mb.setGraphics(thismessage.getIncoming(), thismessage.getColor());
+    		//mb.giveParameters(thismessage.getParameters());
     		mb.setLayoutParams(new GridView.LayoutParams(LayoutParams.MATCH_PARENT,mb.calculateHeight()+mb.bubbleoffset));	
     	}
     	

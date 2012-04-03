@@ -178,11 +178,11 @@ public class ChatService extends Service {
 				}
 
 				@Override
-				public boolean sendMessage(Message _msg) throws RemoteException {
+				public boolean sendMessage(Message _msg, boolean _internal, String[] _params, boolean _timestamp) throws RemoteException {
 					synchronized(_conversation)
 					{
 						Log.v("ChatService","Nachricht an Kontakt " + _conversation.getOpposite().getShowname() + " gesendet:" + _msg.getMessageText());
-						return _conversation.sendMessage(_msg);
+						return _conversation.sendMessage(_msg, _internal, _params, _timestamp);
 					}
 				}
 

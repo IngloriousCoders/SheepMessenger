@@ -16,6 +16,8 @@ import android.util.*;
 public class MessageBubble extends View {
 	
 	private String msgtext, sender;
+	private String[] params;
+	
 	public int paddingleft = 10, paddingright = 10, paddingup = 10, paddingdown = 10;
 	public int bubblewidth = 500, bubbleheight, bubbleoffset = 10, bubblepadding = 50;
 	private List<String> lines;
@@ -59,6 +61,13 @@ public class MessageBubble extends View {
 		} else {
 			placeholder = false;
 		}
+		
+		/*if (params != null) {
+			for (int i=0;i<params.length;i++) {
+				Log.v("Custom","Parameter #" + i + ": " + params[i]);
+			}
+		}*/
+		
 		
 				this.bubblewidth = this.getWidth() - bubblepadding;
 		
@@ -233,13 +242,9 @@ public class MessageBubble extends View {
 		this.sender  = _sender;
 	}
 	
-	/*public void setWidth(int _width) {
-		this.bubblewidth = _width;
-
-		bubbleheight = calculateHeight();
-		this.setLayoutParams(new GridView.LayoutParams(LayoutParams.MATCH_PARENT,bubbleheight + bubbleoffset));
-		this.invalidate();
-	}*/
+	public void giveParameters(String[] _params) {
+		this.params = _params;
+	}
 	
 	public void setGraphics(boolean _incoming, int _color) {
 		this.bubblecolor = _color;
