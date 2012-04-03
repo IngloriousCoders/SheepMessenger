@@ -75,6 +75,17 @@ public class ChatService extends Service {
 			}
 			
 		}
+		@Override
+		public void resetNotificationCounter()
+		{
+			ChatService.this.resetNotificationCount_service();
+		}
+		@Override
+		public void killNotification(int id)
+		{
+			Log.v("ChatService","Cannelld called");
+			mNotificationManager.cancel(id);
+		}
 		
 	};
 	private final List<String> conversationListIndex = new ArrayList<String>();
@@ -272,11 +283,7 @@ public class ChatService extends Service {
 	private int last_count = 1;
 	private int contact_count = 1;
 	
-	BroadcastReceiver onResetNotificationCount = new BroadcastReceiver()
-	{
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
+	private void resetNotificationCount_service() {
 			Log.v("ChatService","Reset current Notificationcount");
 			ChatService.this.last_count = 1;
 			ChatService.this.contact_count = 1;
@@ -284,7 +291,7 @@ public class ChatService extends Service {
 			
 		}
 		
-	};
+	
 	
 	private void addMessageNotification(Contact _contact,Message _msg)
 	{
@@ -308,9 +315,6 @@ public class ChatService extends Service {
 			mNotificationManager.cancel(notification_id-1);
 		}
 		
-		
-		
-		
 		int icon = R.drawable.notification;
 		long when = System.currentTimeMillis();
 	
@@ -319,7 +323,9 @@ public class ChatService extends Service {
 		Intent notificationIntent = new Intent(this, SingleChat.class);
 		notificationIntent.putExtra("service_called", 1);
 		notificationIntent.putExtra("contact", _contact);
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+		Log.v("ChatService","Sent notification id=" + notification_id);
+		notificationIntent.putExtra("kill_notification_id", notification_id);
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		
 		
 		notification.setLatestEventInfo(this, contentTitle, contentText, contentIntent);

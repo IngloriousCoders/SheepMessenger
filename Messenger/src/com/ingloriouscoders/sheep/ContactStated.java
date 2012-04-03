@@ -176,7 +176,7 @@ public class ContactStated extends Contact {
 	public void writeToParcel(Parcel dest, int flags) {
 	   super.writeToParcel(dest, flags);
  
-	   dest.writeBinderArray( new IBinder[] { mContext.asBinder() } );
+	   //dest.writeBinderArray( new IBinder[] { mContext.asBinder() } );
 
 	   dest.writeInt(unreadCount);
 	   dest.writeInt(opened ? 0 : 1);
@@ -198,7 +198,7 @@ public class ContactStated extends Contact {
 		
 		IBinder[] binders = new IBinder[1];
 		in.readBinderArray(binders);
-		mContext = ServiceChatContext.Stub.asInterface(binders[0]);
+		//mContext = ServiceChatContext.Stub.asInterface(binders[0]);
 		unreadCount = in.readInt();
 		opened = in.readInt() == 0;
 		initiateConnections();

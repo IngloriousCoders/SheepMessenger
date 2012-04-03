@@ -13,5 +13,8 @@ interface ServiceChatContext
 	void setStatus(in String status);
 	
 	void addOnServiceSpawnConversationListener(in OnServiceSpawnConversationListener listener);
-	void removeOnServiceSpawnConversationListener(in OnServiceSpawnConversationListener listener);	
+	void removeOnServiceSpawnConversationListener(in OnServiceSpawnConversationListener listener);
+	
+	void resetNotificationCounter();
+	void killNotification(in int id);	
 }
