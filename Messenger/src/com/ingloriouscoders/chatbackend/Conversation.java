@@ -61,11 +61,13 @@ public class Conversation{
 	{
 		return mContext;
 	}
-	public Message prepareMessage()
+	public Message prepareMessage(String _params, boolean _internal)
 	{
 		Message newmsg = new Message();
 		newmsg.setSender(mContext.getUserShowname());
 		newmsg.setIncoming(false);
+		newmsg.setInternal(_internal);
+		newmsg.giveParameters(_params);
 
 		return newmsg;
 	}	
@@ -74,7 +76,7 @@ public class Conversation{
 		history.add(_msg);
 		Log.v("chatbackend","added Message: Size=" + history.size());
 	}
-	public boolean sendMessage(Message _msg, boolean _internal, String[] _params, boolean _timestamp)
+	public boolean sendMessage(Message _msg, boolean _internal, String _params, boolean _timestamp)
 	{
 		if (mChat == null)
 		{
@@ -94,8 +96,10 @@ public class Conversation{
 			
 			msg.setBody(_msg.getMessageText());
 			
-			if (_timestamp)
-				msg.setTimestamp();
+			/*if (_timestamp)
+				msg.setTimestamp();*/
+					
+			msg.addParameters(_params);
 			
 		    mChat.sendMessage(msg);
 		}
@@ -114,29 +118,22 @@ public class Conversation{
 	protected org.jivesoftware.smack.MessageListener smack_listener =  new org.jivesoftware.smack.MessageListener() {
 		@Override
 		public void processMessage(Chat _chat,org.jivesoftware.smack.packet.Message _msg) {
-			/*boolean proc_internal = false;
+			boolean proc_internal = false;
 			
-			//Unsauber: Im Moment nur maximal 20 Parameter, sollte aber eigentlich reichen
-			String[] proc_params = new String[20];
+			String proc_params = "";
 			
 			if (_msg.getBody().equals("") && _msg.getType() == org.jivesoftware.smack.packet.Message.Type.error && _msg.getSubject().startsWith("INTERNALMESSAGE"))
 				proc_internal = true;
 			
-			//if (_msg.getSubject() != null && _msg.getSubject().indexOf("&") != -1)
-				proc_params = _msg.getSubject().split("&");
+			if (_msg.getSubject() != null && _msg.getSubject().indexOf("&") != -1)
+				proc_params = _msg.getSubject();
 			
-			for(int i=0; i<proc_params.length; i++) {
-				Log.v("Custom","Parameter #" + i + ": " + proc_params[i]);
-			}
-			*/
 			
-			//NEUER SYNTAX foo = new Message(String _msgtext, String _sender, boolean _incoming, int _color, boolean _internal, String[] params);
-			Message recieved_msg = new Message(_msg.getBody(), thisclass.getOpposite().getShowname(), true, 1, false, null);
+			//NEUER SYNTAX foo = new Message(String _msgtext, String _sender, boolean _incoming, int _color, boolean _internal, String params);
+			Message recieved_msg = new Message(_msg.getBody(), thisclass.getOpposite().getShowname(), true, 1, true, proc_params);
 					
 			if (_msg.getType() == org.jivesoftware.smack.packet.Message.Type.error)
 			{
-				
-				
 				XMPPError myerr = _msg.getError();
 				Log.v("chatbackend","Fehler bei der Übermittlung: " + myerr.getMessage() + " | " + myerr.getCode());
 				

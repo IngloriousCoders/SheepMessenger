@@ -2,6 +2,8 @@ package com.ingloriouscoders.chatbackend;
 
 import java.util.Calendar;
 
+import android.util.Log;
+
 public class XMPPMessage extends org.jivesoftware.smack.packet.Message {
 	static int INTERNAL, CHAT;
 	static String PARAM_READ = "&markasread", PARAM_WRITING = "&iswriting", PARAM_ADMINTROLL = "&trollhard"; 
@@ -41,5 +43,9 @@ public class XMPPMessage extends org.jivesoftware.smack.packet.Message {
 		Calendar c = Calendar.getInstance();
 		String timestampStr = "&time=" + Integer.toString(c.get(Calendar.DAY_OF_MONTH)) + ";" + Integer.toString(c.get(Calendar.MONTH) + 1) + ";" + Integer.toString(c.get(Calendar.YEAR)) + ";" + Integer.toString(c.get(Calendar.HOUR_OF_DAY)) + ";" + Integer.toString(c.get(Calendar.MINUTE)) + ";" + Integer.toString(c.get(Calendar.SECOND));
 		this.setSubject(timestampStr);
+	}
+
+	public void addParameters(String _params) {
+		this.setSubject(_params);
 	}
 }

@@ -7,6 +7,7 @@ import com.ingloriouscoders.chatbackend.OnContactDataChanged;
 import com.ingloriouscoders.chatbackend.OnNewMessageListener;
 
 import android.content.Context;
+import android.os.RemoteException;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.ListAdapter;
@@ -64,7 +65,7 @@ public class MessageView extends ListView {
 	public void updateGraphics(Message _message) {
 
 		//this.setAdapter(adp);
-		Log.v("Custom","invalidating: " + _message);
+		//Log.v("Custom","invalidating: " + _message);
 		
 		/*if (this.getAdapter() != null)
 		{

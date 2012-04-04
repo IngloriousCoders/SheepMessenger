@@ -1,5 +1,6 @@
 package com.ingloriouscoders.sheep;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
 
@@ -75,6 +76,8 @@ public class SingleChat extends FragmentActivity {
 	
 	final static int default_incomingColor = Color.rgb(50,166,166);
 	final static int default_outgoingColor = Color.rgb(109,217,110);
+	
+	MessageAdapter msga;
 
 	
     @Override
@@ -115,7 +118,7 @@ public void onServiceConnected()
 	
 	
 	final MessageView listview = (MessageView) findViewById(R.id.messageslistview);
-	final MessageAdapter msga = listview.getMessageAdapter();
+	msga = listview.getMessageAdapter();
 	
         try
         {
@@ -195,7 +198,11 @@ public void onServiceConnected()
 				Message msg = new Message();
 				try
 				{
-					msg = myconv.prepareMessage();
+					Calendar c = Calendar.getInstance();
+					String timestampStr = "&time=" + Integer.toString(c.get(Calendar.DAY_OF_MONTH)) + ";" + Integer.toString(c.get(Calendar.MONTH) + 1) + ";" + Integer.toString(c.get(Calendar.YEAR)) + ";" + Integer.toString(c.get(Calendar.HOUR_OF_DAY)) + ";" + Integer.toString(c.get(Calendar.MINUTE)) + ";" + Integer.toString(c.get(Calendar.SECOND));
+					String parameters = timestampStr;
+					
+					msg = myconv.prepareMessage(parameters, false);
 				}
 				catch (RemoteException e)
 				{
@@ -209,15 +216,24 @@ public void onServiceConnected()
 					
 					try
 					{
+						Calendar c = Calendar.getInstance();
+						String timestampStr = "&time=" + Integer.toString(c.get(Calendar.DAY_OF_MONTH)) + ";" + Integer.toString(c.get(Calendar.MONTH) + 1) + ";" + Integer.toString(c.get(Calendar.YEAR)) + ";" + Integer.toString(c.get(Calendar.HOUR_OF_DAY)) + ";" + Integer.toString(c.get(Calendar.MINUTE)) + ";" + Integer.toString(c.get(Calendar.SECOND));
+						
+						String parameters = timestampStr;
+						
 						//NEUER SYNTAX: foo.sendMessage(Message nachricht, boolean internal, String[] parameter, boolean timestamp);
-						myconv.sendMessage(msg, false, null, true);
+						myconv.sendMessage(msg, false, parameters, true);
 					}
 					catch (RemoteException e)
 					{
 						Log.v("SingleChat","Fehler beim Senden der Nachricht ( lokal )");
 					}
 					
-					msga.addScrolledMessage(msg, listview);
+					try {
+						msga.addScrolledMessage(msg, listview);
+					} catch (RemoteException e) {
+						//e.printStackTrace();
+					}
 				}
 			}
 		});
@@ -255,8 +271,8 @@ public void onServiceConnected()
 	   	}
 	   	unbindService(mConnection);
         overridePendingTransition(R.anim.enterfromleft, R.anim.leavetoright);
-        
    }
+    
     @Override
     public void onStart() {
     	super.onStart();

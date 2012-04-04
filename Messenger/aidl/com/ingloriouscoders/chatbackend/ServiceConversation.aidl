@@ -10,9 +10,9 @@ interface ServiceConversation
 	
 	List<Message> getHistory();
 	
-	Message prepareMessage();
+	Message prepareMessage(in String _params, in boolean _internal);
 	
-	boolean sendMessage(in Message _msg, in boolean _internal, in String[] _params, in boolean _timestamp);
+	boolean sendMessage(in Message _msg, in boolean _internal, in String _params, in boolean _timestamp);
 	
 	void addOnServiceNewMessageListener(in OnServiceNewMessageListener _listener);
 	void removeOnServiceNewMessageListener(in OnServiceNewMessageListener _listener);

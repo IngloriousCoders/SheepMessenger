@@ -15,21 +15,24 @@ public class Message implements Parcelable{
 	private boolean incoming;
 	private int color;
 	private boolean internal;
-	private String[] params;
+	private String params;
 	
 	
-	public Message(String _msgtext, String _sender, boolean _incoming, int _color, boolean _internal, String[] _params) {
+	public Message(String _msgtext, String _sender, boolean _incoming, int _color, boolean _internal, String _params) {
 		this.msgtext = _msgtext;
 		this.sender  = _sender;
 		this.incoming = _incoming;
 		this.color = _color;
 		this.internal = _internal;
 		this.params = _params;
+
 	}
 	
 	public Message() {
 		this.msgtext = "";
 		this.sender  = "";
+		//this.internal = false;
+		//this.params = null;
 	}
 	
 
@@ -53,11 +56,10 @@ public class Message implements Parcelable{
 	{
 		return internal;
 	}
-	public String[] getParameters()
+	public String getParameters()
 	{
 		return params;
 	}
-	
 	
 	public void setMessageText(String _msgtext) {
 		this.msgtext = _msgtext;
@@ -73,6 +75,14 @@ public class Message implements Parcelable{
 	{
 		this.color = _color;
 	}
+	public void setInternal(boolean _internal)
+	{
+		this.internal = _internal;
+	}
+	public void giveParameters(String _params)
+	{
+		this.params = _params;
+	}
 
 	//Parcelable Zeugs
 	
@@ -87,6 +97,8 @@ public class Message implements Parcelable{
 	   dest.writeString(sender);
 	   dest.writeInt(incoming ? 0 : 1); // Weil es kein writeBoolean() gibet
 	   dest.writeInt(color);
+	   dest.writeInt(internal ? 0 : 1);
+	   dest.writeString(params);
 	}	
 	public static final Parcelable.Creator<Message> CREATOR
 	    = new Parcelable.Creator<Message>() {
@@ -104,6 +116,8 @@ public class Message implements Parcelable{
 		sender = in.readString();
 		incoming = in.readInt() == 0;
 		color = in.readInt();
+		internal = in.readInt() == 0;
+		params = in.readString();
 	}
 	//Parcelable Zeugs ENDE
 	

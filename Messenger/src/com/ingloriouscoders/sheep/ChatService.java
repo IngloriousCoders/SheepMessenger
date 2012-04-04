@@ -167,10 +167,10 @@ public class ChatService extends Service {
 				}
 
 				@Override
-				public Message prepareMessage() throws RemoteException {
+				public Message prepareMessage(String _params, boolean _internal) throws RemoteException {
 					synchronized(_conversation)
 					{
-						Message msg = _conversation.prepareMessage();
+						Message msg = _conversation.prepareMessage(_params, _internal);
 						Log.v("ChatService","Nachricht an Kontakt " + _conversation.getOpposite().getShowname() + " angefordert:" +
 								msg.getMessageText() + " von " + msg.getSender());
 						return msg;
@@ -178,7 +178,7 @@ public class ChatService extends Service {
 				}
 
 				@Override
-				public boolean sendMessage(Message _msg, boolean _internal, String[] _params, boolean _timestamp) throws RemoteException {
+				public boolean sendMessage(Message _msg, boolean _internal, String _params, boolean _timestamp) throws RemoteException {
 					synchronized(_conversation)
 					{
 						Log.v("ChatService","Nachricht an Kontakt " + _conversation.getOpposite().getShowname() + " gesendet:" + _msg.getMessageText());

@@ -17,6 +17,7 @@ import com.ingloriouscoders.chatbackend.OnNewMessageListener;
 
 import android.widget.GridView;
 import android.os.Parcelable;
+import android.os.RemoteException;
 
 import android.content.Intent;
 import android.app.Activity;
@@ -41,16 +42,15 @@ public class MessageAdapter extends BaseAdapter {
     	this.notifyDataSetChanged();
     }
     
-    public void addScrolledMessage(Message _msg, MessageView _lview)
+    public void addScrolledMessage(Message _msg, MessageView _lview) throws RemoteException
     {
     	mMessageBubble.add(_msg);
 		this.lview = _lview;
 		this.msg = _msg;
 		
-
-		    	lview.smoothScrollBy(lview.getCount() * 500, lview.getCount() * 1000);
-		    	lview.getMessageAdapter().notifyDataSetChanged();
-		    	lview.updateGraphics(msg);
+		lview.smoothScrollBy(lview.getCount() * 500, lview.getCount() * 1000);
+		lview.getMessageAdapter().notifyDataSetChanged();
+		//lview.updateGraphics(msg);
     }
     
     public void removeMessage(Message _msg)
@@ -85,11 +85,10 @@ public class MessageAdapter extends BaseAdapter {
 
     	if (convertView == null)
     	{
-    		   	
         	mb = new MessageBubble(mContext);
         	mb.setMessage(thismessage.getSender(), thismessage.getMessageText());
         	mb.setGraphics(thismessage.getIncoming(), thismessage.getColor());
-        	//mb.giveParameters(thismessage.getParameters());
+        	mb.giveParameters(thismessage.getParameters());
         	//System.out.println(thismessage.getParameters()[0]);
         	mb.setLayoutParams(new GridView.LayoutParams(LayoutParams.MATCH_PARENT,mb.calculateHeight()+mb.bubbleoffset));
     	}
@@ -98,8 +97,8 @@ public class MessageAdapter extends BaseAdapter {
     		mb = (MessageBubble)convertView;
     		mb.setMessage(thismessage.getSender(), thismessage.getMessageText());
     		mb.setGraphics(thismessage.getIncoming(), thismessage.getColor());
-    		//mb.giveParameters(thismessage.getParameters());
-    		mb.setLayoutParams(new GridView.LayoutParams(LayoutParams.MATCH_PARENT,mb.calculateHeight()+mb.bubbleoffset));	
+    		mb.giveParameters(thismessage.getParameters());
+    		mb.setLayoutParams(new GridView.LayoutParams(LayoutParams.MATCH_PARENT,mb.calculateHeight()+mb.bubbleoffset));
     	}
     	
     	//DEBUG:
