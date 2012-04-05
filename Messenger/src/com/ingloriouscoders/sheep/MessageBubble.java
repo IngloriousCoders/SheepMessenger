@@ -252,19 +252,28 @@ public class MessageBubble extends View {
 						
 						canvas.drawText(sender + ":", paddingleft+10, paddingup + ascent, textPaint);
 						
-						String timetext = "";			
-						String[] times = getParamFromId(params,"time").split(";");
-						for(int i=0;i<times.length;i++) {
-							if (times[i].length() == 1) {
-								times[i] = "0" + times[i];
-							}
-						}
-						timetext = times[3] + ":" + times[4];
-
+						String timetext = "";
+						String timeParameter = getParamFromId(params,"time");
 						
+						Log.v("Custom","Raw timestamp: '" + timeParameter + "'");
+						if (!timeParameter.equals("")) {
+							String[] times = timeParameter.split(";");
+							for(int i=0;i<times.length;i++) {
+								if (times[i].length() == 1) {
+									times[i] = "0" + times[i];
+								}
+							}
+							timetext = times[3] + ":" + times[4];
+						} else {
+							textPaint.setColor(Color.RED);
+							timetext = "Timestamp not available";
+						}
+	
+							
 						if (!timetext.equals(""))
 							canvas.drawText(timetext, this.getWidth()-bubblepadding-paddingleft-textPaint.measureText(timetext), paddingup + ascent, textPaint);
-						
+				
+							
 						textPaint.setColor(Color.DKGRAY);
 						canvas.drawLine(paddingleft+5, paddingup + ascent + 3, bubblewidth-(paddingright-5), paddingup + ascent + 3, textPaint);
 						
