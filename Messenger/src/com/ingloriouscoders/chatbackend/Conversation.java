@@ -1,10 +1,13 @@
 package com.ingloriouscoders.chatbackend;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.XMPPError;
+
+import com.ingloriouscoders.sheep.MessageBubble;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -128,6 +131,12 @@ public class Conversation{
 			if (_msg.getSubject() != null && _msg.getSubject().indexOf("&") != -1)
 				proc_params = _msg.getSubject();
 			
+			String timeStamp = MessageBubble.getStaticParamFromId(_msg.getSubject(), "time");
+			if (timeStamp == null) {
+				Calendar c = Calendar.getInstance();
+				String timestampStr = "&time=" + String.valueOf(c.getTimeInMillis());
+				proc_params = proc_params + timestampStr;
+			}
 			
 			//NEUER SYNTAX foo = new Message(String _msgtext, String _sender, boolean _incoming, int _color, boolean _internal, String params);
 			Message recieved_msg = new Message(_msg.getBody(), thisclass.getOpposite().getShowname(), true, 1, true, proc_params);

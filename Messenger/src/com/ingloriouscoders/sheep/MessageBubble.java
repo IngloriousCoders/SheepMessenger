@@ -1,7 +1,10 @@
 package com.ingloriouscoders.sheep;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import android.view.*;
 import android.widget.GridView;
@@ -191,18 +194,16 @@ public class MessageBubble extends View {
 
 						canvas.drawText(sender + ":", paddingleft+bubblepadding, paddingup + ascent, textPaint);
 						
-						String timetext2 = "";	
-						String[] times = getParamFromId(params,"time").split(";");
-						for(int i=0;i<times.length;i++) {
-							if (times[i].length() == 1) {
-								times[i] = "0" + times[i];
-							}
-						}
-						timetext2 = times[3] + ":" + times[4];
 						
+						String timetext = null;
+						String timeParameter = getParamFromId(params,"time");
 						
-						if (!timetext2.equals(""))
-							canvas.drawText(timetext2, this.getWidth()-paddingleft-10-textPaint.measureText(timetext2), paddingup + ascent, textPaint);
+						if (timeParameter != null)
+							timetext = getHourAndMinuteFromStamp(Long.parseLong(timeParameter));
+						
+						if (timetext != null)
+							canvas.drawText(timetext, this.getWidth()-paddingleft-10-textPaint.measureText(timetext), paddingup + ascent, textPaint);
+						
 						
 						textPaint.setColor(Color.DKGRAY);
 						canvas.drawLine(paddingleft-5+bubblepadding, paddingup + ascent + 3, this.getWidth()-10-(paddingright-5), paddingup + ascent + 3, textPaint);
@@ -252,25 +253,13 @@ public class MessageBubble extends View {
 						
 						canvas.drawText(sender + ":", paddingleft+10, paddingup + ascent, textPaint);
 						
-						String timetext = "";
-						String timeParameter = getParamFromId(params,"time");
 						
-						Log.v("Custom","Raw timestamp: '" + timeParameter + "'");
-						if (!timeParameter.equals("")) {
-							String[] times = timeParameter.split(";");
-							for(int i=0;i<times.length;i++) {
-								if (times[i].length() == 1) {
-									times[i] = "0" + times[i];
-								}
-							}
-							timetext = times[3] + ":" + times[4];
-						} else {
-							textPaint.setColor(Color.RED);
-							timetext = "Timestamp not available";
-						}
-	
+						String timeParameter = getParamFromId(params,"time");
+						String timetext = null;
+						if (timeParameter != null)
+							timetext = getHourAndMinuteFromStamp(Long.parseLong(timeParameter));
 							
-						if (!timetext.equals(""))
+						if (timetext != null)
 							canvas.drawText(timetext, this.getWidth()-bubblepadding-paddingleft-textPaint.measureText(timetext), paddingup + ascent, textPaint);
 				
 							
@@ -283,6 +272,13 @@ public class MessageBubble extends View {
 						}
 					}
 		}
+	}
+	
+	public String getHourAndMinuteFromStamp(long _timestamp) {
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+		Date resultingDate = new Date(_timestamp);
+		
+		return sdf.format(resultingDate);
 	}
 	
 	public void setMessage(String _sender, String _msgtext) {
@@ -305,14 +301,32 @@ public class MessageBubble extends View {
 	}
 	
 	public String getParamFromId(String _params, String id) {
-		String param = "";
+		String param = null;
 		
-		String[] paramsSplit = _params.split("&");
-		for(int i=1;i<paramsSplit.length;i++) {
-				if (paramsSplit[i].startsWith(id)) {
-					param = paramsSplit[i].substring(id.length()+1, paramsSplit[i].length());
-					return param;
-				}
+		if (_params.contains("&")) {
+			String[] paramsSplit = _params.split("&");
+			for(int i=1;i<paramsSplit.length;i++) {
+					if (paramsSplit[i].startsWith(id)) {
+						param = paramsSplit[i].substring(id.length()+1, paramsSplit[i].length());
+						return param;
+					}
+			}
+		}
+		
+		return param;
+	}
+	
+	public static String getStaticParamFromId(String _params, String id) {
+		String param = null;
+		
+		if (_params.contains("&")) {
+			String[] paramsSplit = _params.split("&");
+			for(int i=1;i<paramsSplit.length;i++) {
+					if (paramsSplit[i].startsWith(id)) {
+						param = paramsSplit[i].substring(id.length()+1, paramsSplit[i].length());
+						return param;
+					}
+			}
 		}
 		
 		return param;

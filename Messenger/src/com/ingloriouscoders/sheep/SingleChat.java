@@ -199,7 +199,7 @@ public void onServiceConnected()
 				try
 				{
 					Calendar c = Calendar.getInstance();
-					String timestampStr = "&time=" + Integer.toString(c.get(Calendar.DAY_OF_MONTH)) + ";" + Integer.toString(c.get(Calendar.MONTH) + 1) + ";" + Integer.toString(c.get(Calendar.YEAR)) + ";" + Integer.toString(c.get(Calendar.HOUR_OF_DAY)) + ";" + Integer.toString(c.get(Calendar.MINUTE)) + ";" + Integer.toString(c.get(Calendar.SECOND));
+					String timestampStr = "&time=" + String.valueOf(c.getTimeInMillis());
 					String parameters = timestampStr;
 					
 					msg = myconv.prepareMessage(parameters, false);
@@ -217,8 +217,7 @@ public void onServiceConnected()
 					try
 					{
 						Calendar c = Calendar.getInstance();
-						String timestampStr = "&time=" + Integer.toString(c.get(Calendar.DAY_OF_MONTH)) + ";" + Integer.toString(c.get(Calendar.MONTH) + 1) + ";" + Integer.toString(c.get(Calendar.YEAR)) + ";" + Integer.toString(c.get(Calendar.HOUR_OF_DAY)) + ";" + Integer.toString(c.get(Calendar.MINUTE)) + ";" + Integer.toString(c.get(Calendar.SECOND));
-						
+						String timestampStr = "&time=" + String.valueOf(c.getTimeInMillis());
 						String parameters = timestampStr;
 						
 						//NEUER SYNTAX: foo.sendMessage(Message nachricht, boolean internal, String[] parameter, boolean timestamp);
