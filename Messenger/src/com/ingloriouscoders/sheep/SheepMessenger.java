@@ -73,7 +73,7 @@ public class SheepMessenger extends FragmentActivity {
         ActionBar ab = getActionBar();
         ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);    
         
-        ab.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg));
+        ab.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
         
         ab.setDisplayShowTitleEnabled(false);
         

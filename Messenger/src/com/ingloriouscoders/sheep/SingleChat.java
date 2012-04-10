@@ -1,5 +1,7 @@
 package com.ingloriouscoders.sheep;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
@@ -17,11 +19,25 @@ import com.ingloriouscoders.chatbackend.ServiceConversation;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.app.ActionBar;
+import android.app.ActionBar.TabListener;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.ActionBar.Tab;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -36,6 +52,7 @@ import android.widget.ListView	;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -43,6 +60,7 @@ import android.content.SharedPreferences;
 import android.content.pm.FeatureInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Contacts.People;
 
 import android.view.Window;
 
@@ -87,168 +105,232 @@ public class SingleChat extends FragmentActivity {
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         
         ActionBar ab = getActionBar();
-        ab.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg));
+        ab.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
         ab.setDisplayHomeAsUpEnabled(true);
         mActionBar = ab;
         
         setContentView(R.layout.singlechat);
-        
-        
-        
-        
    }
         
-public void onServiceConnected()
-{
-	try
+	public void onServiceConnected()
 	{
-		mConversation = mServiceChatContext.spawnConversation(mOpposite);
-		this.mServiceChatContext.resetNotificationCounter();
-		if (this.mNotificationIDToKill != -1)
-		{
-			this.mServiceChatContext.killNotification(this.mNotificationIDToKill);
-		}
-	}
-	catch (RemoteException e)
-	{
-		Log.v("SingleChat","Konversation konnte nicht geladen werden");
-		return;
-	}
-	
-	
-	
-	final MessageView listview = (MessageView) findViewById(R.id.messageslistview);
-	msga = listview.getMessageAdapter();
-	
-        try
-        {
-        	List<Message> history = mConversation.getHistory();
-        	for (int i=0;i<history.size();i++)
-        	{
-        		Message msg = history.get(i);
-        		if (msg.getIncoming())
-        		{
-        			msg.setColor(default_incomingColor);
-        		}
-        		else 
-        		{
-        			msg.setColor(default_outgoingColor);
-        		}
-        		msga.addMessage(msg);
-        	}
-        	if (history.size() == 0)
-        	{
-        		Message first = new Message();
-        		msga.addMessage(first);
-        		//msga.removeMessage(first);
-        	}
-        }
-        catch ( RemoteException e)
-        {
-        	Log.v("SingleChat","Der Verlauf konnte nicht geladen werden. Serviceverbindungsproblem");
-        }
-        
-        
-        
-        mListener = new OnServiceNewMessageListener.Stub()
-        {
-			@Override
-			public void onNewMessage(ServiceConversation _conversation,
-					Message recieved_message) throws RemoteException {
-				Log.v("SingleChat","Message recieved");
-				recieved_message.setColor(default_incomingColor);
-				msga.addScrolledMessage(recieved_message, listview);			
-			}
-        	
-        };
 		try
 		{
-			mConversation.removeOnServiceNewMessageListener(mListener);
-        	mConversation.addOnServiceNewMessageListener(mListener);
+			mConversation = mServiceChatContext.spawnConversation(mOpposite);
+			this.mServiceChatContext.resetNotificationCounter();
+			if (this.mNotificationIDToKill != -1)
+			{
+				this.mServiceChatContext.killNotification(this.mNotificationIDToKill);
+			}
 		}
 		catch (RemoteException e)
 		{
-			Log.v("SingleChat","Fehler, der OnServiceNewMessageListener konnte nicht geaddet werden.");
+			Log.v("SingleChat","Konversation konnte nicht geladen werden");
+			return;
 		}
 		
-        
-        final Activity ownact = this;
-
-        
-        
-        Button sendbutton = (Button)findViewById(R.id.send_button);
-        sendbutton.setOnClickListener(new Button.OnClickListener() {
+		
+		
+		final MessageView listview = (MessageView) findViewById(R.id.messageslistview);
+		msga = listview.getMessageAdapter();
+		
+	        try
+	        {
+	        	List<Message> history = mConversation.getHistory();
+	        	for (int i=0;i<history.size();i++)
+	        	{
+	        		Message msg = history.get(i);
+	        		if (msg.getIncoming())
+	        		{
+	        			msg.setColor(default_incomingColor);
+	        		}
+	        		else 
+	        		{
+	        			msg.setColor(default_outgoingColor);
+	        		}
+	        		msga.addMessage(msg);
+	        	}
+	        	if (history.size() == 0)
+	        	{
+	        		Message first = new Message();
+	        		msga.addMessage(first);
+	        		//msga.removeMessage(first);
+	        	}
+	        }
+	        catch ( RemoteException e)
+	        {
+	        	Log.v("SingleChat","Der Verlauf konnte nicht geladen werden. Serviceverbindungsproblem");
+	        }
+	        
+	        
+	        
+	        mListener = new OnServiceNewMessageListener.Stub()
+	        {
+				@Override
+				public void onNewMessage(ServiceConversation _conversation,
+						Message recieved_message) throws RemoteException {
+					Log.v("SingleChat","Message recieved");
+					recieved_message.setColor(default_incomingColor);
+					msga.addScrolledMessage(recieved_message, listview);			
+				}
+	        	
+	        };
+			try
+			{
+				mConversation.removeOnServiceNewMessageListener(mListener);
+	        	mConversation.addOnServiceNewMessageListener(mListener);
+			}
+			catch (RemoteException e)
+			{
+				Log.v("SingleChat","Fehler, der OnServiceNewMessageListener konnte nicht geaddet werden.");
+			}
 			
-			@Override
-			public void onClick(View v) {
-				SingleChat myact = ((SingleChat)ownact);
-				ServiceConversation myconv = myact.mConversation;
-				if (myconv == null)
-				{
-					return;
-				}
-				EditText sendfield = (EditText)myact.findViewById(R.id.msg_field);
-				Editable content = sendfield.getText();
-				sendfield.setText("");
-				if (content.toString().equals("") )
+	        
+	        final Activity ownact = this;
+	
+	        
+	        
+	        Button sendbutton = (Button)findViewById(R.id.send_button);
+	        sendbutton.setOnClickListener(new Button.OnClickListener() {
 				
-				{
-					return;
-				}
-				Message msg = new Message();
-				try
-				{
-					Calendar c = Calendar.getInstance();
-					String timestampStr = "&time=" + String.valueOf(c.getTimeInMillis());
-					String parameters = timestampStr;
+				@Override
+				public void onClick(View v) {
+					SingleChat myact = ((SingleChat)ownact);
+					ServiceConversation myconv = myact.mConversation;
+					if (myconv == null)
+					{
+						return;
+					}
+					EditText sendfield = (EditText)myact.findViewById(R.id.msg_field);
+					Editable content = sendfield.getText();
+					sendfield.setText("");
+					if (content.toString().equals("") )
 					
-					msg = myconv.prepareMessage(parameters, false);
-				}
-				catch (RemoteException e)
-				{
-					Log.v("SingleChat","Fehler beim Vorbereiten der Nachricht ( lokal )");
-				}
-				finally
-				{
-					
-					msg.setColor(default_outgoingColor);
-					msg.setMessageText(content.toString());
-					
+					{
+						return;
+					}
+					Message msg = new Message();
 					try
 					{
 						Calendar c = Calendar.getInstance();
 						String timestampStr = "&time=" + String.valueOf(c.getTimeInMillis());
 						String parameters = timestampStr;
 						
-						//NEUER SYNTAX: foo.sendMessage(Message nachricht, boolean internal, String[] parameter, boolean timestamp);
-						myconv.sendMessage(msg, false, parameters, true);
+						msg = myconv.prepareMessage(parameters, false);
 					}
 					catch (RemoteException e)
 					{
-						Log.v("SingleChat","Fehler beim Senden der Nachricht ( lokal )");
+						Log.v("SingleChat","Fehler beim Vorbereiten der Nachricht ( lokal )");
 					}
-					
-					try {
-						msga.addScrolledMessage(msg, listview);
-					} catch (RemoteException e) {
-						//e.printStackTrace();
+					finally
+					{
+						
+						msg.setColor(default_outgoingColor);
+						msg.setMessageText(content.toString());
+						
+						try
+						{
+							Calendar c = Calendar.getInstance();
+							String timestampStr = "&time=" + String.valueOf(c.getTimeInMillis());
+							String parameters = timestampStr;
+							
+							//NEUER SYNTAX: foo.sendMessage(Message nachricht, boolean internal, String[] parameter, boolean timestamp);
+							myconv.sendMessage(msg, false, parameters, true);
+						}
+						catch (RemoteException e)
+						{
+							Log.v("SingleChat","Fehler beim Senden der Nachricht ( lokal )");
+						}
+						
+						try {
+							msga.addScrolledMessage(msg, listview);
+						} catch (RemoteException e) {
+							//e.printStackTrace();
+						}
 					}
 				}
-			}
-		});
-        EditText sendfield = (EditText)findViewById(R.id.msg_field);
-        sendfield.setOnEditorActionListener(new OnEditorActionListener() {
-			
-			@Override
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-				SingleChat myact = ((SingleChat)ownact);
-				Button sendbutton = (Button)myact.findViewById(R.id.send_button);
-				sendbutton.callOnClick();
-				return false;
-			}
-		});
+			});
+	        EditText sendfield = (EditText)findViewById(R.id.msg_field);
+	        sendfield.setOnEditorActionListener(new OnEditorActionListener() {
+				
+				@Override
+				public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+					SingleChat myact = ((SingleChat)ownact);
+					Button sendbutton = (Button)myact.findViewById(R.id.send_button);
+					sendbutton.callOnClick();
+					return false;
+				}
+			});
+	
+	}
 
-   }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+
+        inflater.inflate(R.menu.singlechatmenu, menu);
+
+        return true;
+    }
+	
+	public void initActionBar() {
+		String contacturi = mOpposite.getPhotoURI();
+
+		
+		Drawable contactIcon;
+		
+		InputStream contactStream = null;
+		try {
+			contactStream = this.getContentResolver().openInputStream(Uri.parse(contacturi));
+		} catch (FileNotFoundException e) {
+			contacturi = "";
+			e.printStackTrace();
+		}
+		
+		contactIcon = Drawable.createFromStream(contactStream, null);
+
+		mActionBar.setTitle(mOpposite.getShowname());
+		mActionBar.setSubtitle("schreibt...");
+		
+		if (contacturi.equals(""))
+			mActionBar.setIcon(R.drawable.nocontact_rounded);
+		else
+			mActionBar.setIcon(drawContactExtras(contactIcon, 200, 200));
+	}
+	
+	public Drawable drawContactExtras(Drawable _start, int _destwidth, int _destheight)
+	{
+	    Bitmap src = ((BitmapDrawable) _start).getBitmap();	    
+	    Bitmap bitmap = Bitmap.createScaledBitmap(src, _destwidth, _destheight, false);
+	    
+	    Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Config.ARGB_8888);
+	        Canvas canvas = new Canvas(output);
+
+	        final int borderWidth = 5;
+	        final Paint paint = new Paint();
+	        final Rect rect = new Rect(borderWidth, borderWidth, bitmap.getWidth()-borderWidth, bitmap.getHeight()-borderWidth);
+	        final RectF rectF = new RectF(rect);
+	        final float roundPx = 28;
+
+	        paint.setAntiAlias(true);
+	        canvas.drawARGB(0, 0, 0, 0);
+	        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+	        paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
+	        
+	        canvas.drawBitmap(bitmap, rect, rect, paint);
+	        
+	        final Paint borderPaint = new Paint();
+	        borderPaint.setAntiAlias(true);
+	        borderPaint.setColor(Color.WHITE);
+	        borderPaint.setStyle(Style.STROKE);
+	        borderPaint.setStrokeWidth(10);
+	        canvas.drawRoundRect(new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight()), roundPx + 5, roundPx + 5, borderPaint);
+
+	    return new BitmapDrawable(output);
+	}
+
+
 
     public void onDestroy()
     {
@@ -310,9 +392,7 @@ public void onServiceConnected()
         	finishActivity(0);
         }
         
-        mActionBar.setTitle("Chat mit " + mOpposite.getShowname());   
-        
-                               
+        initActionBar();                      
                 
         final MessageView listview = (MessageView) findViewById(R.id.messageslistview);
         listview.smoothScrollBy(listview.getCount() * 500, 1000);
