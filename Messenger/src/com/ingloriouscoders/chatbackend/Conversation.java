@@ -117,6 +117,22 @@ public class Conversation{
 		return true;
 	}
 	
+	public String getParamFromId(String _params, String id) {
+		String param = null;
+		
+		if (_params.contains("&")) {
+			String[] paramsSplit = _params.split("&");
+			for(int i=1;i<paramsSplit.length;i++) {
+					if (paramsSplit[i].startsWith(id)) {
+						param = paramsSplit[i].substring(id.length()+1, paramsSplit[i].length());
+						return param;
+					}
+			}
+		}
+		
+		return param;
+	}
+	
 	private final Conversation thisclass = this;
 	protected org.jivesoftware.smack.MessageListener smack_listener =  new org.jivesoftware.smack.MessageListener() {
 		@Override
@@ -131,15 +147,21 @@ public class Conversation{
 			if (_msg.getSubject() != null && _msg.getSubject().indexOf("&") != -1)
 				proc_params = _msg.getSubject();
 			
-			String timeStamp = MessageBubble.getStaticParamFromId(_msg.getSubject(), "time");
-			if (timeStamp == null) {
+			if (!proc_params.equals("")) {
+				String timeStamp = getParamFromId(_msg.getSubject(), "time");
+				if (timeStamp != null) {
+					Log.v("Conversation.java","Getting timestamp from message.");
+				}
+			} else {
 				Calendar c = Calendar.getInstance();
-				String timestampStr = "&time=" + String.valueOf(c.getTimeInMillis());
+				String timestampStr = "&time=" + String.valueOf(c.getTimeInMillis() + 100000);
 				proc_params = proc_params + timestampStr;
+				
+				Log.v("Conversation.java","Getting timestamp from current time.");
 			}
 			
 			//NEUER SYNTAX foo = new Message(String _msgtext, String _sender, boolean _incoming, int _color, boolean _internal, String params);
-			Message recieved_msg = new Message(_msg.getBody(), thisclass.getOpposite().getShowname(), true, 1, true, proc_params);
+			Message recieved_msg = new Message(_msg.getBody(), thisclass.getOpposite().getShowname(), true, 1, proc_internal, proc_params);
 					
 			if (_msg.getType() == org.jivesoftware.smack.packet.Message.Type.error)
 			{
