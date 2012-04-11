@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-	<item android:id="@+id/history" android:showAsAction="ifRoom|withText" android:title="History" android:icon="@android:drawable/ic_menu_add">
+    <item android:id="@+id/attachmentbutton" android:showAsAction="ifRoom|withText" android:title="@string/send_file" android:icon="@drawable/ic_menu_attachment_custom"></item>
+	<item android:id="@+id/smileybutton" android:showAsAction="ifRoom|withText" android:title="@string/send_smiley" android:icon="@drawable/ic_menu_emoticons_custom">
 	    <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 			<item android:id="@+id/history2" android:showAsAction="ifRoom|withText" android:title="History" android:icon="@android:drawable/ic_menu_add"></item>
 			<item android:id="@+id/settings2" android:showAsAction="ifRoom|withText" android:title="Settings" android:icon="@android:drawable/ic_menu_preferences"></item>
 		</menu>
 	</item>
-	<item android:id="@+id/settings" android:showAsAction="ifRoom|withText" android:title="Settings" android:icon="@android:drawable/ic_menu_preferences"></item>
 
 </menu>

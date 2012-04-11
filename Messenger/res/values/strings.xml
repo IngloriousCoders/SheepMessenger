@@ -17,6 +17,8 @@
     <string name="pref_account_server_label">Serveradresse</string>
     <string name="button_send">Senden</string>
     <string name="service_name">SheepMessenger Chat Service</string>
+    <string name="send_file">Datei</string>
+    <string name="send_smiley">Smiley</string>
     
 
 </resources>

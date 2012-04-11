@@ -1,0 +1,11 @@
+Liste aller bekannten Bugs / TODO
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ - Inkompatibilität von Timestamps und GTalk-Nachrichten							GEFIXT
+ - Selten: Empfangene Nachricht wird mehrfach angezeigt
+ - ContactBoxes werden bei Drehen nicht neu geladen/angezeigt
+ - Notification sollte bei Betrachten des Chats, der die Notification erzeugt hat,
+   verschwinden
+ - Laut Google sollte nicht auf Android-Icons referenziert, sondern die Icons
+   heruntergeladen und dann eingebunden werden (wegen Inkompatibilität auf
+   manchen Geräten)

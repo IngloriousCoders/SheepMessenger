@@ -154,7 +154,7 @@ public class Conversation{
 				}
 			} else {
 				Calendar c = Calendar.getInstance();
-				String timestampStr = "&time=" + String.valueOf(c.getTimeInMillis() + 100000);
+				String timestampStr = "&time=" + String.valueOf(c.getTimeInMillis());
 				proc_params = proc_params + timestampStr;
 				
 				Log.v("Conversation.java","Getting timestamp from current time.");
